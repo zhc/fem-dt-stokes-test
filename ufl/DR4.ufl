@@ -1,0 +1,12 @@
+shape = triangle
+
+P = FiniteElement("Lagrange", shape, 1)
+
+p = TrialFunction(P)
+q = TestFunction(P)
+
+p01 = Coefficient(P)
+p0 = Coefficient(P)
+
+a = p*q*dx
+L = (p01+p0)*q*dx 
