@@ -9,7 +9,7 @@ W = U*P
 
 w0 = Coefficient(W)
 u0, p0 = split(w0)
-tau = Constant(triangle)
+tau = Constant(shape)
 
-a = 1.0/tau*inner(u, v)*dx + inner(grad(u), grad(v))*dx - p*div(v)*dx + q*div(u)*dx
+a = 1.0/tau*inner(u, v)*dx + inner(grad(u), grad(v))*dx + inner(v, grad(p))*dx + q*div(u)*dx
 L = 1.0/tau*inner(u0, v)*dx

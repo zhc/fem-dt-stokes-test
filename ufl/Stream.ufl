@@ -1,9 +1,0 @@
-U = VectorElement("Lagrange", triangle, 2)
-S = FiniteElement("Lagrange", triangle, 2)
-
-psi = TrialFunction(S)
-v   = TestFunction(S)
-u   = Coefficient(U)
-
-a = inner(grad(psi), grad(v))*dx
-L = inner(-rot(u), v)*dx

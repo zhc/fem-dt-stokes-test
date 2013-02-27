@@ -10,7 +10,7 @@ Settings::Settings(int argc, char *argv[]) {
 	solver_name = "default";
 	precond_name = "default";
 	log_level = dolfin::INFO;
-    scheme = "implicit";
+    scheme = "im";
 
     int opt = -1;
     while ((opt = getopt(argc, argv, optString().c_str())) != -1) {

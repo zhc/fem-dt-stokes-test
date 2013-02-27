@@ -7,10 +7,8 @@ using namespace dolfin;
 
 BaseSolver::BaseSolver(const Settings &settings)
     : _settings(settings),
-      _velocityFile(_settings.output_dir+"/u."+_settings.scheme+".pvd"),
-      _pressureFile(_settings.output_dir+"/p."+_settings.scheme+".pvd")
-//      _velocityFile(_settings.output_dir+"/u."+_settings.scheme+".raw"),
-//      _pressureFile(_settings.output_dir+"/p."+_settings.scheme+".raw")
+      _velocityFile(_settings.output_dir+"/u.pvd"),
+      _pressureFile(_settings.output_dir+"/p.pvd")
 {
     set_log_level(_settings.log_level);
     _params.add("linear_solver", _settings.solver_name);
@@ -29,8 +27,8 @@ void BaseSolver::save(double t, Function &u, Function &p)
 
         std::stringstream ss;
         ss << t;
-        std::ofstream outPressure((_settings.output_dir + "/p." + _settings.scheme + "." +  ss.str() + ".txt").c_str());
-        std::ofstream outVelo((_settings.output_dir + "/u." + _settings.scheme + "."+ ss.str() + ".txt").c_str());
+        std::ofstream outPressure((_settings.output_dir + "/p." +  ss.str() + ".txt").c_str());
+        std::ofstream outVelo((_settings.output_dir + "/u." + ss.str() + ".txt").c_str());
 
         outPressure << std::fixed << std::setprecision(10);
         outVelo << std::fixed << std::setprecision(10);
@@ -50,10 +48,16 @@ void BaseSolver::save(double t, Function &u, Function &p)
 
 bool BaseSolver::isInteresting(double t)
 {
-    cout << "ttttttt=" << t << endl;
+    return true;
+
     double eps = _settings.dt/10;
-    if (fabs(t-0.05)<eps || fabs(t-0.1)<eps || fabs(t-0.15)<eps || fabs(t-0.199)<eps){
+    if (fabs(t-0.2)<eps){
         return true;
     }
     return false;
+//    cout << "ttttttt=" << t << endl;
+//    if (fabs(t-0.05)<eps || fabs(t-0.1)<eps || fabs(t-0.15)<eps || fabs(t-0.2)<eps){
+//        return true;
+//    }
+//    return false;
 }

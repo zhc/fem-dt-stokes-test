@@ -3,7 +3,7 @@
 #include "drscheme.h"
 #include "prscheme.h"
 #include "lbscheme.h"
-#include "implicitscheme.h"
+#include "imscheme.h"
 #include <map>
 
 SolverFactory::SolverFactory(const Settings &settings) : _settings(settings)
@@ -23,7 +23,7 @@ BaseSolver *SolverFactory::create()
     solvers[solver->name()] = solver;
     solver = new LBScheme(_settings);
     solvers[solver->name()] = solver;
-    solver = new ImplicitScheme(_settings);
+    solver = new IMScheme(_settings);
     solvers[solver->name()] = solver;
 
     solver = 0;

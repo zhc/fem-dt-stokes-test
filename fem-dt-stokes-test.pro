@@ -9,9 +9,9 @@ SOURCES += main.cpp \
     solverfactory.cpp \
     drscheme.cpp \
     settings.cpp \
-    implicitscheme.cpp \
     prscheme.cpp \
-    lbscheme.cpp
+    lbscheme.cpp \
+    imscheme.cpp
 
 HEADERS += \
     basesolver.h \
@@ -20,18 +20,15 @@ HEADERS += \
     drscheme.h \
     settings.h \
     domains.h \
-    implicitscheme.h \
     prscheme.h \
-    lbscheme.h
+    lbscheme.h \
+    imscheme.h
 
 OTHER_FILES += \
-    ufl/Stream.ufl \
-    ufl/Stokes.ufl \
     ufl/DR4.ufl \
     ufl/DR3.ufl \
     ufl/DR2.ufl \
     ufl/DR1.ufl \
-    ufl/StokesGrad.ufl \
     ufl/PR4.ufl \
     ufl/PR3.ufl \
     ufl/PR2.ufl \
@@ -41,8 +38,7 @@ OTHER_FILES += \
     ufl/LB1.ufl \
     ufl/CN2.ufl \
     ufl/CN1.ufl \
-    start.sh
+    start.sh \
+    ufl/IM.ufl
 
 LIBS += -ldolfin
-
-QMAKE_CXXFLAGS_WARN_OFF += unused-parameter

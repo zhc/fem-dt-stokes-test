@@ -1,18 +1,20 @@
-#include "implicitscheme.h"
+#include "imscheme.h"
 #include <dolfin.h>
-#include "ufl/StokesGrad.h"
+#include "ufl/IM.h"
 #include "domains.h"
 
 using namespace dolfin;
 
-ImplicitScheme::ImplicitScheme(const Settings &settings) : BaseSolver(settings)
+IMScheme::IMScheme(const Settings &settings) : BaseSolver(settings)
 {
 }
 
-void ImplicitScheme::solve()
+
+void IMScheme::solve()
 {
     UnitSquare mesh(_settings.nx, _settings.nx);
-    StokesGrad::FunctionSpace superSpace(mesh);
+
+    IM::FunctionSpace superSpace(mesh);
     SubSpace velocitySpace(superSpace, 0);
     SubSpace pressureSpace(superSpace, 1);
 
@@ -30,8 +32,8 @@ void ImplicitScheme::solve()
     bcs.push_back(&bc1);
     bcs.push_back(&bc2);
 
-    StokesGrad::BilinearForm bf1(superSpace, superSpace);
-    StokesGrad::LinearForm lf1(superSpace);
+    IM::BilinearForm bf1(superSpace, superSpace);
+    IM::LinearForm lf1(superSpace);
 
     Constant tau(_settings.dt);
     Function w1(superSpace);
@@ -43,22 +45,21 @@ void ImplicitScheme::solve()
     double t = 0;
     Timer timer("Calculation timer");
     timer.start();
-    while(t <= _settings.t){
-        dolfin::solve(bf1 == lf1, w1, bcs, _params);
 
-//        _velocityFile << w1[0];
-//        _pressureFile << w1[1];
+    while(t <= _settings.t + _settings.dt){
+        cout << "t = " << t << endl;
+        dolfin::solve(bf1 == lf1, w1, bcs, _params);
         save(t, w1[0], w1[1]);
 
         t += _settings.dt;
         w0 = w1;
-        cout << "t = " << t << endl;
     }
+
     timer.stop();
     list_timings();
 }
 
-std::string ImplicitScheme::name()
+std::string IMScheme::name()
 {
     return "im";
 }
