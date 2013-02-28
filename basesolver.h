@@ -3,11 +3,12 @@
 
 #include "settings.h"
 #include <dolfin.h>
+#include <domains.h>
 
 class BaseSolver
 {
 public:
-    BaseSolver(const Settings& _settings);
+    BaseSolver(const Settings& settings);
     virtual ~BaseSolver();
     virtual void solve() = 0;
     virtual std::string name() = 0;
@@ -17,8 +18,22 @@ protected:
     dolfin::Parameters _params;
     dolfin::File _velocityFile;
     dolfin::File _pressureFile;
+    dolfin::BoundaryCondition* createMoveableBC(dolfin::FunctionSpace& space);
+    dolfin::BoundaryCondition* createNoslipBC(dolfin::FunctionSpace& space);
+    dolfin::BoundaryCondition* createPinpointBC(dolfin::FunctionSpace& space);
+
+    dolfin::UnitSquare _mesh;
 private:
     bool isInteresting(double t);
+    void saveTxt(double t, dolfin::Function& u, dolfin::Function& p);
+    void savePvd(double t, dolfin::Function& u, dolfin::Function& p);
+
+    dolfin::Constant _moveRight;
+    dolfin::Constant _noSlip;
+    dolfin::Constant _zero;
+    DomainTop _top;
+    DomainFloorAndWalls _walls;
+    DomainBottomPoint _bottomPoint;
 };
 
 #endif // BASESOLVER_H

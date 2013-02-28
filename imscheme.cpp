@@ -5,32 +5,25 @@
 
 using namespace dolfin;
 
-IMScheme::IMScheme(const Settings &settings) : BaseSolver(settings)
+IMScheme::IMScheme(const Settings &settings)
+    : BaseSolver(settings)
 {
 }
 
 
 void IMScheme::solve()
 {
-    UnitSquare mesh(_settings.nx, _settings.nx);
-
-    IM::FunctionSpace superSpace(mesh);
+    IM::FunctionSpace superSpace(_mesh);
     SubSpace velocitySpace(superSpace, 0);
     SubSpace pressureSpace(superSpace, 1);
 
-    Constant noSlip(0, 0);
-    Constant moveRight(1, 0);
-    Constant zero(0);
-    DomainTop top;
-    DomainFloorAndWalls walls;
-    DomainBottomPoint bottomPoint;
-    DirichletBC bc0(velocitySpace, noSlip, walls);
-    DirichletBC bc1(velocitySpace, moveRight, top);
-    DirichletBC bc2(pressureSpace, zero, bottomPoint);
+    std::auto_ptr<BoundaryCondition> bc1(createMoveableBC(velocitySpace));
+    std::auto_ptr<BoundaryCondition> bc0(createNoslipBC(velocitySpace));
+    std::auto_ptr<BoundaryCondition> bc2(createPinpointBC(pressureSpace));
     std::vector<const BoundaryCondition*> bcs;
-    bcs.push_back(&bc0);
-    bcs.push_back(&bc1);
-    bcs.push_back(&bc2);
+    bcs.push_back(bc0.get());
+    bcs.push_back(bc1.get());
+    bcs.push_back(bc2.get());
 
     IM::BilinearForm bf1(superSpace, superSpace);
     IM::LinearForm lf1(superSpace);
@@ -47,17 +40,26 @@ void IMScheme::solve()
     timer.start();
 
     while(t <= _settings.t + _settings.dt){
-        cout << "t = " << t << endl;
+        info("t=%lf", t);
         dolfin::solve(bf1 == lf1, w1, bcs, _params);
         save(t, w1[0], w1[1]);
-
         t += _settings.dt;
         w0 = w1;
+//        solveImpl();
     }
 
     timer.stop();
     list_timings();
 }
+
+//void IMScheme::solveImpl()
+//{
+//    info("t=%lf", t);
+//    dolfin::solve(bf1 == lf1, w1, bcs, _params);
+//    save(t, w1[0], w1[1]);
+//    t += _settings.dt;
+//    w0 = w1;
+//}
 
 std::string IMScheme::name()
 {

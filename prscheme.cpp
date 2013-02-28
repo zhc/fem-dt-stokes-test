@@ -20,24 +20,17 @@ PRScheme::~PRScheme()
 
 void PRScheme::solve()
 {
-    UnitSquare mesh(_settings.nx, _settings.nx);
-    PR1::FunctionSpace velocitySpace(mesh);
-    PR2::FunctionSpace pressureSpace(mesh);
+    PR1::FunctionSpace velocitySpace(_mesh);
+    PR2::FunctionSpace pressureSpace(_mesh);
 
-    Constant noSlip(0, 0);
-    Constant moveRight(1, 0);
-    DomainTop top;
-    DomainFloorAndWalls walls;
-    DirichletBC bc0(velocitySpace, noSlip, walls);
-    DirichletBC bc1(velocitySpace, moveRight, top);
+    std::auto_ptr<BoundaryCondition> bc1(createMoveableBC(velocitySpace));
+    std::auto_ptr<BoundaryCondition> bc0(createNoslipBC(velocitySpace));
+    std::auto_ptr<BoundaryCondition> bc2(createPinpointBC(pressureSpace));
     std::vector<const BoundaryCondition*> bcs;
-    bcs.push_back(&bc0);
-    bcs.push_back(&bc1);
-    DomainBottomPoint bottomPoint;
-    Constant zero(0);
-    DirichletBC bc2(pressureSpace, zero, bottomPoint);
+    bcs.push_back(bc0.get());
+    bcs.push_back(bc1.get());
     std::vector<const BoundaryCondition*> bcs2;
-    bcs2.push_back(&bc2);
+    bcs2.push_back(bc2.get());
 
     PR1::BilinearForm bf1(velocitySpace, velocitySpace);
     PR1::LinearForm lf1(velocitySpace);
@@ -76,14 +69,10 @@ void PRScheme::solve()
         dolfin::solve(bf2 == lf2, gamma, bcs2, _params);
         dolfin::solve(bf3 == lf3, u1, bcs, _params);
         dolfin::solve(bf4 == lf4, p1, _params);
-//        _velocityFile 	<< u1;
-//        _pressureFile 	<< p1;
         save(t, u1, p1);
-
         t += _settings.dt;
         u0 = u1;
         p0 = p1;
-        cout << "t = " << t << endl;
     }
     timer.stop();
     list_timings();
