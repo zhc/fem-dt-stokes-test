@@ -49,7 +49,7 @@ void CNScheme::solve()
     double t = 0;
     Timer timer("Calculation timer");
     timer.start();
-    while(t <= _settings.t){
+    while(t <= _settings.t + _settings.dt){
         dolfin::solve(bf1 == lf1, w1, bcs, _params);
         gamma = w1[1];
         dolfin::solve(bf2 == lf2, p1, _params);

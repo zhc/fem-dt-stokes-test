@@ -52,10 +52,14 @@ BoundaryCondition *BaseSolver::createPinpointBC(FunctionSpace &space)
 
 bool BaseSolver::isInteresting(double t)
 {
-    return true;
-
-    double eps = _settings.dt/10;
-    if (fabs(t-0.2)<eps){
+    double eps = 0.0001;
+    if (fabs(t-0.05)<eps
+            || fabs(t-0.01)<eps
+            || fabs(t-0.05)<eps
+            || fabs(t-0.10)<eps
+            || fabs(t-0.15)<eps
+            || fabs(t-0.2)<eps
+            ){
         return true;
     }
     return false;
@@ -78,7 +82,7 @@ void BaseSolver::savePvd(double t, Function &u, Function &p)
     outVelo << std::fixed << std::setprecision(10);
 
     Array<double> values(2);
-    double step = 1.0/200.0;
+    double step = 1.0/80.0;
     for(double x=0; x<=1; x += step){
         for(double y=0; y<=1; y += step){
             double pressure = p(x, y);

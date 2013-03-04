@@ -52,7 +52,7 @@ void LBScheme::solve()
     double t = 0;
     Timer timer("Calculation timer");
     timer.start();
-    while(t <= _settings.t){
+    while(t <= _settings.t + _settings.dt){
         dolfin::solve(bf1 == lf1, u12, bcs, _params);
         dolfin::solve(bf2 == lf2, p1, bcs2, _params);
         dolfin::solve(bf3 == lf3, u1, bcs, _params);
