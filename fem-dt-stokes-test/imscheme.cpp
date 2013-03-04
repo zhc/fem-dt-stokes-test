@@ -45,21 +45,11 @@ void IMScheme::solve()
         save(t, w1[0], w1[1]);
         t += _settings.dt;
         w0 = w1;
-//        solveImpl();
     }
 
     timer.stop();
     list_timings();
 }
-
-//void IMScheme::solveImpl()
-//{
-//    info("t=%lf", t);
-//    dolfin::solve(bf1 == lf1, w1, bcs, _params);
-//    save(t, w1[0], w1[1]);
-//    t += _settings.dt;
-//    w0 = w1;
-//}
 
 std::string IMScheme::name()
 {
