@@ -34,7 +34,7 @@ void CNScheme::solve()
     CN2::BilinearForm bf2(pressureSpace2, pressureSpace2);
     CN2::LinearForm lf2(pressureSpace2);
 
-    Constant tau(_settings.dt);
+    Constant tau(_settings.delta_time);
     Function w1(superSpace);
     Function w0(superSpace);
     Function gamma(pressureSpace2);
@@ -49,12 +49,13 @@ void CNScheme::solve()
     double t = 0;
     Timer timer("Calculation timer");
     timer.start();
-    while(t <= _settings.t + _settings.dt){
+    while(t <= _settings.max_time + _settings.delta_time){
+        info("t=%lf", t);
         dolfin::solve(bf1 == lf1, w1, bcs, _params);
         gamma = w1[1];
         dolfin::solve(bf2 == lf2, p1, _params);
         save(t, w1[0], p1);
-        t += _settings.dt;
+        t += _settings.delta_time;
         w0 = w1;
         p0 = p1;
     }

@@ -6,8 +6,20 @@
 #include "imscheme.h"
 #include <map>
 
-SolverFactory::SolverFactory(const Settings &settings) : _settings(settings)
+SolverFactory::SolverFactory(Settings &settings) : _settings(settings)
 {
+}
+
+BaseSolver *SolverFactory::createEx()
+{
+    _settings.prepareEx();
+    return create();
+}
+
+BaseSolver *SolverFactory::createTest()
+{
+    _settings.prepareTest();
+    return create();
 }
 
 BaseSolver *SolverFactory::create()

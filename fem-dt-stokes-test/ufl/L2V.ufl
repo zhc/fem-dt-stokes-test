@@ -1,0 +1,9 @@
+shape = triangle
+
+U = VectorElement("Lagrange", shape, 2)
+
+u = Coefficient(U)
+u_ex = Coefficient(U)
+
+M = inner(u-u_ex, u-u_ex)*dx
+#M = inner(u, u)*dx

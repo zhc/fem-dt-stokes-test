@@ -35,7 +35,7 @@ void LBScheme::solve()
     LB3::BilinearForm bf3(velocitySpace, velocitySpace);
     LB3::LinearForm lf3(velocitySpace);
 
-    Constant tau(_settings.dt);
+    Constant tau(_settings.delta_time);
     Function u0(velocitySpace);
     Function u12(velocitySpace);
     Function u1(velocitySpace);
@@ -52,12 +52,13 @@ void LBScheme::solve()
     double t = 0;
     Timer timer("Calculation timer");
     timer.start();
-    while(t <= _settings.t + _settings.dt){
+    while(t <= _settings.max_time + _settings.delta_time){
+        info("t=%lf", t);
         dolfin::solve(bf1 == lf1, u12, bcs, _params);
         dolfin::solve(bf2 == lf2, p1, bcs2, _params);
         dolfin::solve(bf3 == lf3, u1, bcs, _params);
         save(t, u1, p1);
-        t += _settings.dt;
+        t += _settings.delta_time;
         u0 = u1;
     }
     timer.stop();

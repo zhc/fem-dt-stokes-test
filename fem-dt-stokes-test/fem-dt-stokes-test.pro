@@ -39,6 +39,15 @@ OTHER_FILES += \
     ufl/CN2.ufl \
     ufl/CN1.ufl \
     start.sh \
-    ufl/IM.ufl
+    ufl/IM.ufl \
+    ufl/L2V.ufl
 
 LIBS += -ldolfin
+
+CONFIG(debug, debug|release)
+{
+}
+CONFIG(release, debug|release)
+{
+#    DEFINES += NDEBUG
+}

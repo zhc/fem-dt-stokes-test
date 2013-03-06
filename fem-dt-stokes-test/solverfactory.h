@@ -7,10 +7,12 @@
 class SolverFactory
 {
 public:
-    SolverFactory(const Settings& settings);
-    BaseSolver* create();
+    SolverFactory(Settings& settings);
+    BaseSolver* createEx();
+    BaseSolver* createTest();
 private:
-    const Settings& _settings;
+    Settings& _settings;
+    BaseSolver* create();
 };
 
 #endif // SOLVERFACTORY_H

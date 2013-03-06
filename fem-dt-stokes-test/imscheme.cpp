@@ -28,7 +28,7 @@ void IMScheme::solve()
     IM::BilinearForm bf1(superSpace, superSpace);
     IM::LinearForm lf1(superSpace);
 
-    Constant tau(_settings.dt);
+    Constant tau(_settings.delta_time);
     Function w1(superSpace);
     Function w0(superSpace);
     lf1.w0 = w0;
@@ -39,11 +39,11 @@ void IMScheme::solve()
     Timer timer("Calculation timer");
     timer.start();
 
-    while(t <= _settings.t + _settings.dt){
+    while(t <= _settings.max_time + _settings.delta_time){
         info("t=%lf", t);
         dolfin::solve(bf1 == lf1, w1, bcs, _params);
         save(t, w1[0], w1[1]);
-        t += _settings.dt;
+        t += _settings.delta_time;
         w0 = w1;
     }
 
