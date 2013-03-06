@@ -74,7 +74,7 @@ void BaseSolver::save(double t, Function &u, Function &p)
 {
     if (isInteresting(t)){
         savePvd(t, u, p);
-        saveTxt(t, u, p);
+//        saveTxt(t, u, p);
         saveFunctions(t, u, p);
     }
 }
@@ -133,10 +133,10 @@ void BaseSolver::savePvd(double t, Function &u, Function &p)
 
 void BaseSolver::saveTxt(double t, Function &u, Function &p)
 {
-    std::stringstream ss;
-    ss << t;
-    std::ofstream outPressure((_settings.output_dir + "/p." +  ss.str() + ".txt").c_str());
-    std::ofstream outVelo((_settings.output_dir + "/u." + ss.str() + ".txt").c_str());
+//    std::stringstream ss;
+//    ss << t;
+//    std::ofstream outPressure((_settings.output_dir + "/p." +  ss.str() + ".txt").c_str());
+//    std::ofstream outVelo((_settings.output_dir + "/u." + ss.str() + ".txt").c_str());
 }
 
 void BaseSolver::saveFunctions(double t, Function &u, Function &p)
