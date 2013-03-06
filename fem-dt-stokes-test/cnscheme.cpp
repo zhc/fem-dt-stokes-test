@@ -12,6 +12,7 @@ CNScheme::CNScheme(const Settings &settings) : BaseSolver(settings)
 
 CNScheme::~CNScheme()
 {
+    printf("destruct cn\n");
 }
 
 void CNScheme::solve()

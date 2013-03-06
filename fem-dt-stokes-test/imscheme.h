@@ -7,6 +7,7 @@ class IMScheme : public BaseSolver
 {
 public:
     IMScheme(const Settings& settings);
+    ~IMScheme();
     void solve();
     std::string name();
 };

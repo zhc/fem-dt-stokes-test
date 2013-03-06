@@ -10,6 +10,10 @@ IMScheme::IMScheme(const Settings &settings)
 {
 }
 
+IMScheme::~IMScheme()
+{
+    printf("destruct im\n");
+}
 
 void IMScheme::solve()
 {

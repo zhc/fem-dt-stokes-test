@@ -14,7 +14,7 @@ PRScheme::PRScheme(const Settings &settings) : BaseSolver(settings)
 
 PRScheme::~PRScheme()
 {
-
+    printf("destruct pr\n");
 }
 
 

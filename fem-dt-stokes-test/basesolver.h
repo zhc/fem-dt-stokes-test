@@ -15,6 +15,7 @@ public:
     void save(double t, dolfin::Function& u, dolfin::Function& p);
     void compare(BaseSolver* exact);
 protected:
+//    BaseSolver(const Settings& settings);
     const Settings& _settings;
     dolfin::Parameters _params;
     dolfin::File _velocityFile;
@@ -24,6 +25,13 @@ protected:
     dolfin::BoundaryCondition* createPinpointBC(dolfin::FunctionSpace& space);
 
     dolfin::UnitSquare _mesh;
+    std::vector<dolfin::BoundaryCondition*> bcs;
+    std::vector<dolfin::Form*> bfs;
+    std::vector<dolfin::Form*> lfs;
+    std::vector<dolfin::FunctionSpace*> spaces;
+    std::vector<dolfin::Function*> vars;
+    dolfin::Constant *tau;
+
 private:
     bool isInteresting(double t);
     void saveTxt(double t, dolfin::Function& u, dolfin::Function& p);
@@ -39,6 +47,8 @@ private:
 
     std::vector<Function*> calculatedVelocity;
     std::vector<Function*> calculatedPressure;
+
+
 };
 
 #endif // BASESOLVER_H

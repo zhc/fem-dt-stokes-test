@@ -12,6 +12,7 @@ LBScheme::LBScheme(const Settings &_settings) : BaseSolver(_settings)
 
 LBScheme::~LBScheme()
 {
+    printf("destruct lb\n");
 }
 
 void LBScheme::solve()

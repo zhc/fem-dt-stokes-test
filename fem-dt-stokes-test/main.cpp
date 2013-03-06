@@ -29,7 +29,6 @@ int main(int argc, char *argv[]){
 
     BaseSolver *solverTest = factory.createTest();
     solverTest->solve();
-//    solverTest->compare(0);
 
     BaseSolver *solverEx = factory.createEx();
     solverEx->solve();
