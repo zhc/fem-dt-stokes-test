@@ -20,7 +20,7 @@ BaseSolver::BaseSolver(const Settings &settings)
     set_log_level(_settings.log_level);
     _params.add("linear_solver", _settings.solver);
     _params.add("preconditioner", _settings.preconditioner);    
-    tau = NULL;
+    tau = new Constant(_settings.delta_time);
 }
 
 BaseSolver::~BaseSolver()
@@ -32,7 +32,7 @@ BaseSolver::~BaseSolver()
     for(std::vector<Function*>::iterator it=calculatedPressure.begin(); it != calculatedPressure.end(); it++){
         delete (*it);
     }
-    for(std::vector<dolfin::BoundaryCondition*>::iterator it=bcs.begin(); it!=bcs.end(); it++){
+    for(std::vector<const dolfin::BoundaryCondition*>::iterator it=bcs.begin(); it!=bcs.end(); it++){
         delete (*it);
     }
     for(std::vector<dolfin::Form*>::iterator it=bfs.begin(); it!=bfs.end(); it++){

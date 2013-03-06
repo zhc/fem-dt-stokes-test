@@ -8,6 +8,30 @@ using namespace dolfin;
 IMScheme::IMScheme(const Settings &settings)
     : BaseSolver(settings)
 {
+    IM::FunctionSpace* superSpace = new IM::FunctionSpace(_mesh);
+    SubSpace* velocitySpace = new SubSpace(*superSpace, 0);
+    SubSpace* pressureSpace = new SubSpace(*superSpace, 1);
+    spaces.push_back(superSpace);
+    spaces.push_back(velocitySpace);
+    spaces.push_back(pressureSpace);
+
+    bcs.push_back(createMoveableBC(*velocitySpace));
+    bcs.push_back(createNoslipBC(*velocitySpace));
+    bcs.push_back(createPinpointBC(*pressureSpace));
+
+    IM::BilinearForm* bf1 = new IM::BilinearForm(*superSpace, *superSpace);
+    IM::LinearForm* lf1 = new IM::LinearForm(*superSpace);
+    bfs.push_back(bf1);
+    lfs.push_back(lf1);
+
+    Function* w1 = new Function(*superSpace);
+    Function* w0 = new Function(*superSpace);
+    vars.push_back(w1);
+    vars.push_back(w0);
+
+    lf1->w0 = *w0;
+    lf1->tau = *tau;
+    bf1->tau = *tau;
 }
 
 IMScheme::~IMScheme()
@@ -17,27 +41,6 @@ IMScheme::~IMScheme()
 
 void IMScheme::solve()
 {
-    IM::FunctionSpace superSpace(_mesh);
-    SubSpace velocitySpace(superSpace, 0);
-    SubSpace pressureSpace(superSpace, 1);
-
-    std::auto_ptr<BoundaryCondition> bc1(createMoveableBC(velocitySpace));
-    std::auto_ptr<BoundaryCondition> bc0(createNoslipBC(velocitySpace));
-    std::auto_ptr<BoundaryCondition> bc2(createPinpointBC(pressureSpace));
-    std::vector<const BoundaryCondition*> bcs;
-    bcs.push_back(bc0.get());
-    bcs.push_back(bc1.get());
-    bcs.push_back(bc2.get());
-
-    IM::BilinearForm bf1(superSpace, superSpace);
-    IM::LinearForm lf1(superSpace);
-
-    Constant tau(_settings.delta_time);
-    Function w1(superSpace);
-    Function w0(superSpace);
-    lf1.w0 = w0;
-    lf1.tau = tau;
-    bf1.tau = tau;
 
     double t = 0;
     Timer timer("Calculation timer");
@@ -45,10 +48,10 @@ void IMScheme::solve()
 
     while(t <= _settings.max_time + _settings.delta_time){
         info("t=%lf", t);
-        dolfin::solve(bf1 == lf1, w1, bcs, _params);
-        save(t, w1[0], w1[1]);
+        dolfin::solve(*bfs[0] == *lfs[0], *vars[0], bcs, _params);
+        save(t, (*vars[0])[0], (*vars[0])[1]);
         t += _settings.delta_time;
-        w0 = w1;
+        (*vars[1]) = (*vars[0]);
     }
 
     timer.stop();

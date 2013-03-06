@@ -8,6 +8,47 @@ using namespace dolfin;
 
 CNScheme::CNScheme(const Settings &settings) : BaseSolver(settings)
 {
+    CN1::FunctionSpace* superSpace = new CN1::FunctionSpace(_mesh);
+    SubSpace* velocitySpace = new SubSpace(*superSpace, 0);
+    SubSpace* pressureSpace = new SubSpace(*superSpace, 1);
+    CN2::FunctionSpace* pressureSpace2 = new CN2::FunctionSpace(_mesh);
+
+    spaces.push_back(superSpace);
+    spaces.push_back(velocitySpace);
+    spaces.push_back(pressureSpace);
+    spaces.push_back(pressureSpace2);
+
+    bcs.push_back(createMoveableBC(*velocitySpace));
+    bcs.push_back(createNoslipBC(*velocitySpace));
+    bcs.push_back(createPinpointBC(*pressureSpace));
+
+    CN1::BilinearForm* bf1 = new CN1::BilinearForm(*superSpace, *superSpace);
+    CN1::LinearForm* lf1 = new CN1::LinearForm(*superSpace);
+    CN2::BilinearForm* bf2 = new CN2::BilinearForm(*pressureSpace2, *pressureSpace2);
+    CN2::LinearForm* lf2 = new CN2::LinearForm(*pressureSpace2);
+
+    bfs.push_back(bf1);
+    bfs.push_back(bf2);
+    lfs.push_back(lf1);
+    lfs.push_back(lf2);
+
+    Function* w1 = new Function(*superSpace);
+    Function* w0 = new Function(*superSpace);
+    Function* gamma = new Function(*pressureSpace2);
+    Function* p0 = new Function(*pressureSpace2);
+    Function* p1 = new Function(*pressureSpace2);
+
+    vars.push_back(w1);
+    vars.push_back(w0);
+    vars.push_back(gamma);
+    vars.push_back(p0);
+    vars.push_back(p1);
+
+    lf1->w0 = *w0;
+    lf1->tau = *tau;
+    bf1->tau = *tau;
+    lf2->gamma = *gamma;
+    lf2->p0 = *p0;
 }
 
 CNScheme::~CNScheme()
@@ -17,48 +58,18 @@ CNScheme::~CNScheme()
 
 void CNScheme::solve()
 {
-    CN1::FunctionSpace superSpace(_mesh);
-    SubSpace velocitySpace(superSpace, 0);
-    SubSpace pressureSpace(superSpace, 1);
-    CN2::FunctionSpace pressureSpace2(_mesh);
-
-    std::auto_ptr<BoundaryCondition> bc1(createMoveableBC(velocitySpace));
-    std::auto_ptr<BoundaryCondition> bc0(createNoslipBC(velocitySpace));
-    std::auto_ptr<BoundaryCondition> bc2(createPinpointBC(pressureSpace));
-    std::vector<const BoundaryCondition*> bcs;
-    bcs.push_back(bc0.get());
-    bcs.push_back(bc1.get());
-    bcs.push_back(bc2.get());
-
-    CN1::BilinearForm bf1(superSpace, superSpace);
-    CN1::LinearForm lf1(superSpace);
-    CN2::BilinearForm bf2(pressureSpace2, pressureSpace2);
-    CN2::LinearForm lf2(pressureSpace2);
-
-    Constant tau(_settings.delta_time);
-    Function w1(superSpace);
-    Function w0(superSpace);
-    Function gamma(pressureSpace2);
-    Function p0(pressureSpace2);
-    Function p1(pressureSpace2);
-    lf1.w0 = w0;
-    lf1.tau = tau;
-    bf1.tau = tau;
-    lf2.gamma = gamma;
-    lf2.p0 = p0;
-
     double t = 0;
     Timer timer("Calculation timer");
     timer.start();
     while(t <= _settings.max_time + _settings.delta_time){
         info("t=%lf", t);
-        dolfin::solve(bf1 == lf1, w1, bcs, _params);
-        gamma = w1[1];
-        dolfin::solve(bf2 == lf2, p1, _params);
-        save(t, w1[0], p1);
+        dolfin::solve(*bfs[0] == *lfs[0], *vars[0], bcs, _params);
+        *vars[2] = (*vars[0])[1];
+        dolfin::solve(*bfs[1] == *lfs[1], *vars[4], _params);
+        save(t, (*vars[0])[0], *vars[4]);
         t += _settings.delta_time;
-        w0 = w1;
-        p0 = p1;
+        *vars[1] = *vars[0];
+        *vars[3] = *vars[4];
     }
     timer.stop();
     list_timings();

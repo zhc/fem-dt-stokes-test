@@ -21,14 +21,14 @@ DRScheme::DRScheme(const Settings& settings) : BaseSolver(settings)
     bcs.push_back(createNoslipBC(velocitySpace));
     bcs.push_back(createPinpointBC(pressureSpace));
 
-    DR1::BilinearForm *bf1 = new DR1::BilinearForm(velocitySpace, velocitySpace);
-    DR1::LinearForm *lf1 = new DR1::LinearForm(velocitySpace);
-    DR2::BilinearForm *bf2 = new DR2::BilinearForm(pressureSpace, pressureSpace);
-    DR2::LinearForm *lf2 = new DR2::LinearForm(pressureSpace);
-    DR3::BilinearForm *bf3 = new DR3::BilinearForm(velocitySpace, velocitySpace);
-    DR3::LinearForm *lf3 = new DR3::LinearForm(velocitySpace);
-    DR4::BilinearForm *bf4 = new DR4::BilinearForm(pressureSpace, pressureSpace);
-    DR4::LinearForm *lf4 = new DR4::LinearForm(pressureSpace);
+    DR1::BilinearForm   *bf1 = new DR1::BilinearForm(velocitySpace, velocitySpace);
+    DR1::LinearForm     *lf1 = new DR1::LinearForm(velocitySpace);
+    DR2::BilinearForm   *bf2 = new DR2::BilinearForm(pressureSpace, pressureSpace);
+    DR2::LinearForm     *lf2 = new DR2::LinearForm(pressureSpace);
+    DR3::BilinearForm   *bf3 = new DR3::BilinearForm(velocitySpace, velocitySpace);
+    DR3::LinearForm     *lf3 = new DR3::LinearForm(velocitySpace);
+    DR4::BilinearForm   *bf4 = new DR4::BilinearForm(pressureSpace, pressureSpace);
+    DR4::LinearForm     *lf4 = new DR4::LinearForm(pressureSpace);
 
     lfs.push_back(lf1);
     lfs.push_back(lf2);
@@ -39,8 +39,6 @@ DRScheme::DRScheme(const Settings& settings) : BaseSolver(settings)
     bfs.push_back(bf3);
     bfs.push_back(bf4);
 
-
-    tau = new Constant(_settings.delta_time);
     Function* u0 = new Function(velocitySpace);
     Function* u12 = new Function(velocitySpace);
     Function* u1 = new Function(velocitySpace);
@@ -99,66 +97,6 @@ void DRScheme::solve() {
     timer.stop();
     list_timings();
 }
-/*
-void DRScheme::solve() {
-    DR1::FunctionSpace* velocitySpace = new DR1::FunctionSpace(_mesh);
-    DR2::FunctionSpace* pressureSpace= new DR2::FunctionSpace(_mesh);
-
-    BoundaryCondition *bc1 = createMoveableBC(*velocitySpace);
-    BoundaryCondition *bc0 = createNoslipBC(*velocitySpace);
-    BoundaryCondition *bc2 = createPinpointBC(*pressureSpace);
-    std::vector<const BoundaryCondition*> bcs;
-    bcs.push_back(bc0);
-    bcs.push_back(bc1);
-    std::vector<const BoundaryCondition*> bcs2;
-    bcs2.push_back(bc2);
-
-    DR1::BilinearForm *bf1 = new DR1::BilinearForm(*velocitySpace, *velocitySpace);
-    DR1::LinearForm *lf1 = new DR1::LinearForm (*velocitySpace);
-    DR2::BilinearForm *bf2 = new DR2::BilinearForm (*pressureSpace, *pressureSpace);
-    DR2::LinearForm *lf2 = new DR2::LinearForm (*pressureSpace);
-    DR3::BilinearForm *bf3 = new DR3::BilinearForm (*velocitySpace, *velocitySpace);
-    DR3::LinearForm *lf3= new DR3::LinearForm (*velocitySpace);
-    DR4::BilinearForm *bf4= new DR4::BilinearForm (*pressureSpace, *pressureSpace);
-    DR4::LinearForm *lf4= new DR4::LinearForm (*pressureSpace);
-
-    Constant *tau = new Constant(_settings.delta_time);
-    Function *u0 = new Function(*velocitySpace);
-    Function *u12 = new Function(*velocitySpace);
-    Function *u1 = new Function(*velocitySpace);
-    Function *p0 = new Function(*pressureSpace);
-    Function *p01 = new Function(*pressureSpace);
-    Function *p1 = new Function(*pressureSpace);
-    bf1->tau = *tau;
-    lf1->tau = *tau;
-    lf1->p0 = *p0;
-    lf1->u0 = *u0;
-    lf2->tau = *tau;
-    lf2->u12 = *u12;
-    lf3->tau = *tau;
-    lf3->p01 = *p01;
-    lf3->u12 = *u12;
-    lf4->p01 = *p01;
-    lf4->p0 = *p0;
-
-    double t = 0;
-    Timer timer("Calculation timer");
-    timer.start();
-    while(t <= _settings.max_time + _settings.delta_time){
-        info("t=%lf", t);
-        dolfin::solve(*bf1 == *lf1, *u12, bcs, _params);
-        dolfin::solve(*bf2 == *lf2, *p01, bcs2, _params);
-        dolfin::solve(*bf3 == *lf3, *u1, bcs, _params);
-        dolfin::solve(*bf4 == *lf4, *p1, _params);
-        save(t, *u1, *p1);
-        t += _settings.delta_time;
-        *u0 = *u1;
-        *p0 = *p1;
-    }
-    timer.stop();
-    list_timings();
-}
-*/
 
 std::string DRScheme::name()
 {

@@ -25,7 +25,7 @@ protected:
     dolfin::BoundaryCondition* createPinpointBC(dolfin::FunctionSpace& space);
 
     dolfin::UnitSquare _mesh;
-    std::vector<dolfin::BoundaryCondition*> bcs;
+    std::vector<const dolfin::BoundaryCondition*> bcs;
     std::vector<dolfin::Form*> bfs;
     std::vector<dolfin::Form*> lfs;
     std::vector<dolfin::FunctionSpace*> spaces;
