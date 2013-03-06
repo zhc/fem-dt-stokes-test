@@ -51,6 +51,25 @@ BaseSolver::~BaseSolver()
         delete tau;
 }
 
+void BaseSolver::solve()
+{
+    if (bcs.size() >= 3){
+        bcs1.push_back(this->bcs[0]);
+        bcs1.push_back(this->bcs[1]);
+        bcs2.push_back(this->bcs[2]);
+    }
+    double t = 0;
+    Timer timer("Calculation timer " + name());
+    timer.start();
+    while(t <= _settings.max_time + _settings.delta_time){
+        info("t=%lf", t);
+        solveStep(t);
+        t += _settings.delta_time;
+    }
+    timer.stop();
+    list_timings();
+}
+
 void BaseSolver::save(double t, Function &u, Function &p)
 {
     if (isInteresting(t)){

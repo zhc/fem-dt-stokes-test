@@ -8,7 +8,7 @@ class CNScheme : public BaseSolver {
 public:
     CNScheme(const Settings& settings);
     ~CNScheme();
-    void solve();
+    void solveStep(double t);
     std::string name();
 private:
 };

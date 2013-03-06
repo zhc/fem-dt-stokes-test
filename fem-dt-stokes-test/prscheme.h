@@ -8,7 +8,7 @@ class PRScheme : public BaseSolver
 public:
     PRScheme(const Settings& settings);
     ~PRScheme();
-    void solve();
+    void solveStep(double t);
     std::string name();
 private:
 

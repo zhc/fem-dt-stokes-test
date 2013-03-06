@@ -56,23 +56,14 @@ CNScheme::~CNScheme()
     printf("destruct cn\n");
 }
 
-void CNScheme::solve()
+void CNScheme::solveStep(double t)
 {
-    double t = 0;
-    Timer timer("Calculation timer");
-    timer.start();
-    while(t <= _settings.max_time + _settings.delta_time){
-        info("t=%lf", t);
-        dolfin::solve(*bfs[0] == *lfs[0], *vars[0], bcs, _params);
-        *vars[2] = (*vars[0])[1];
-        dolfin::solve(*bfs[1] == *lfs[1], *vars[4], _params);
-        save(t, (*vars[0])[0], *vars[4]);
-        t += _settings.delta_time;
-        *vars[1] = *vars[0];
-        *vars[3] = *vars[4];
-    }
-    timer.stop();
-    list_timings();
+    dolfin::solve(*bfs[0] == *lfs[0], *vars[0], bcs, _params);
+    *vars[2] = (*vars[0])[1];
+    dolfin::solve(*bfs[1] == *lfs[1], *vars[4], _params);
+    save(t, (*vars[0])[0], *vars[4]);
+    *vars[1] = *vars[0];
+    *vars[3] = *vars[4];
 }
 
 std::string CNScheme::name()

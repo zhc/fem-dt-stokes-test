@@ -10,12 +10,12 @@ class BaseSolver
 public:
     BaseSolver(const Settings& settings);
     virtual ~BaseSolver();
-    virtual void solve() = 0;
+    void solve();
     virtual std::string name() = 0;
     void save(double t, dolfin::Function& u, dolfin::Function& p);
     void compare(BaseSolver* exact);
 protected:
-//    BaseSolver(const Settings& settings);
+    virtual void solveStep(double t) = 0;
     const Settings& _settings;
     dolfin::Parameters _params;
     dolfin::File _velocityFile;
@@ -26,6 +26,8 @@ protected:
 
     dolfin::UnitSquare _mesh;
     std::vector<const dolfin::BoundaryCondition*> bcs;
+    std::vector<const BoundaryCondition*> bcs1;
+    std::vector<const BoundaryCondition*> bcs2;
     std::vector<dolfin::Form*> bfs;
     std::vector<dolfin::Form*> lfs;
     std::vector<dolfin::FunctionSpace*> spaces;

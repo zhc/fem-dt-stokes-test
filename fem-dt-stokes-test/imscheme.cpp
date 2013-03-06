@@ -39,23 +39,11 @@ IMScheme::~IMScheme()
     printf("destruct im\n");
 }
 
-void IMScheme::solve()
+void IMScheme::solveStep(double t)
 {
-
-    double t = 0;
-    Timer timer("Calculation timer");
-    timer.start();
-
-    while(t <= _settings.max_time + _settings.delta_time){
-        info("t=%lf", t);
-        dolfin::solve(*bfs[0] == *lfs[0], *vars[0], bcs, _params);
-        save(t, (*vars[0])[0], (*vars[0])[1]);
-        t += _settings.delta_time;
-        (*vars[1]) = (*vars[0]);
-    }
-
-    timer.stop();
-    list_timings();
+    dolfin::solve(*bfs[0] == *lfs[0], *vars[0], bcs, _params);
+    save(t, (*vars[0])[0], (*vars[0])[1]);
+    (*vars[1]) = (*vars[0]);
 }
 
 std::string IMScheme::name()

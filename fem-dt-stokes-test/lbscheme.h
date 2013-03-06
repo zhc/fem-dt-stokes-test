@@ -8,7 +8,7 @@ class LBScheme : public BaseSolver
 public:
     LBScheme(const Settings& _settings);
     ~LBScheme();
-    void solve();
+    void solveStep(double t);
     std::string name();
 };
 

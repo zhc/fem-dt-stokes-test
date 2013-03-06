@@ -8,7 +8,7 @@ class DRScheme : public BaseSolver {
 public:
     DRScheme(const Settings& settings);
     ~DRScheme();
-	void solve();
+    void solveStep(double t);
     std::string name();
 private:
 };

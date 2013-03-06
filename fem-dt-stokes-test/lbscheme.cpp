@@ -54,28 +54,13 @@ LBScheme::~LBScheme()
     printf("destruct lb\n");
 }
 
-void LBScheme::solve()
+void LBScheme::solveStep(double t)
 {
-    std::vector<const BoundaryCondition*> bcs;
-    bcs.push_back(this->bcs[0]);
-    bcs.push_back(this->bcs[1]);
-    std::vector<const BoundaryCondition*> bcs2;
-    bcs2.push_back(this->bcs[2]);
-
-    double t = 0;
-    Timer timer("Calculation timer");
-    timer.start();
-    while(t <= _settings.max_time + _settings.delta_time){
-        info("t=%lf", t);
-        dolfin::solve(*bfs[0] == *lfs[0], *vars[1], bcs, _params);
-        dolfin::solve(*bfs[1] == *lfs[1], *vars[3], bcs2, _params);
-        dolfin::solve(*bfs[2] == *lfs[2], *vars[2], bcs, _params);
-        save(t, *vars[2], *vars[3]);
-        t += _settings.delta_time;
-        *vars[0] = *vars[2];
-    }
-    timer.stop();
-    list_timings();
+    dolfin::solve(*bfs[0] == *lfs[0], *vars[1], bcs1, _params);
+    dolfin::solve(*bfs[1] == *lfs[1], *vars[3], bcs2, _params);
+    dolfin::solve(*bfs[2] == *lfs[2], *vars[2], bcs1, _params);
+    save(t, *vars[2], *vars[3]);
+    *vars[0] = *vars[2];
 }
 
 std::string LBScheme::name()

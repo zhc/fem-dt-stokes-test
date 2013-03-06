@@ -8,7 +8,7 @@ class IMScheme : public BaseSolver
 public:
     IMScheme(const Settings& settings);
     ~IMScheme();
-    void solve();
+    void solveStep(double t);
     std::string name();
 };
 
