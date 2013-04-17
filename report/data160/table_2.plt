@@ -1,5 +1,5 @@
 #set term postscript eps color
-set term png size 1600, 1200
+set term png size 3200, 2400
 set key on autotitle columnheader
 #set xlabel 't'
 #set ylabel 'velocity error'
