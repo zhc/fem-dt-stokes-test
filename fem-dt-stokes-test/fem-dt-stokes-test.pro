@@ -51,3 +51,5 @@ CONFIG(release, debug|release)
 {
 #    DEFINES += NDEBUG
 }
+
+RESOURCES +=

@@ -6,6 +6,7 @@
 \usepackage{indentfirst}
 \usepackage{color}
 \usepackage{multirow}
+\usepackage{amsmath}
 \usepackage{bm}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -44,27 +45,56 @@
 }
 
 
-\title{Сравнение схем расщепления для нестационарного уравнения Стокса}
-\author{Виктор Борисов}
+\title{Численное сравнение схем расщепления для нестационарного уравнения Стокса}
+\author{Борисов В.С.}
 
 \begin{document}
 
 \maketitle
 
 \section{Задача}
-Нестационарное уравнение Стокса описывает течение несжимаемой жидкости в области $\Omega$ с границей $\Gamma$:
-\begin{equation}
-\frac{\partial {\bm u}}{\partial t} -\Delta {\bm u} + \nabla p = {\bm f}({\bm x}), \quad {\bm x} \in \Omega,
-\end{equation}
-\begin{equation}
-\nabla\cdot{\bm u} = 0, \quad {\bm x} \in \Omega,
-\end{equation}
-\begin{equation}
-{\bm u} = {\bm g}({\bm x}), \quad {\bm x} \in \Gamma,
-\end{equation}
-где ${\bm u}({\bm x})$ - скорость, $p({\bm x})$ - давление и ${\bm f}({\bm x})$ - внутренний источник движения. В двумерной задаче ${\bm x}=(x_1, x_2)$, остальные векторные величины задаются аналогично: ${\bm u}=(u_1, u_2)$, ${\bm f}=(f_1, f_2)$, ${\bm g}=(g_1, g_2)$.
+Рассматривается применение схем расщепления для нестационарного уравнения Стокса, которое описывает течение сильно вязкой несжимаемой жидкости. Исходная система связывает в одном уравнение переменные скорости и давления, что при использовании метода конечных элементов, увеличивает количество одновременно решаемых неизвестных. Путем расщепления неизвестные скорости и давления вычисляются по отдельности, то есть вместо составления матрицы включающей обе неизвестные, используются меньшие размером матрицы. При этом изменяется погрешность и время вычисления численного решения.
 
-Рассматривается тестовая двумерная задача о течении в каверне с подвижной верхней границей. Подвижная верхняя граница означает, что вектор скорости на ней имеет ненулевое значение. Задача решается в безразмерных величинах на единичном квадрате $\Omega$ (рис. \ref{fg:cavity}), c границей $\Gamma=\Gamma_1 \cup \Gamma_2$, где на верхней границе $\Gamma_1$ скорость принимает значения ${\bm u}=(1, 0)$, в остальной части $\Gamma_2$ поставлено условие неприлипания и непротекания ${\bm u}=(0, 0)$.
+Нестационарное уравнение Стокса описывает течение несжимаемой жидкости в области $\Omega$ с границей $\partial \Gamma$:
+\begin{equation}
+\begin{split}
+\frac{\partial {\bm u}({\bm x}, t)}{\partial t} -\Delta {\bm u}({\bm x}, t) + \nabla p({\bm x}, t) &= {\bm f}({\bm x}, t), \\
+\nabla\cdot{\bm u}({\bm x}, t) &= 0, 
+\end{split}
+\quad {\bm x} \in \Omega, \quad 0<t \leq T,
+\end{equation} 
+
+$$
+{\bm u(\bm x, t)} = {\bm g}({\bm x}, t), \quad {\bm x} \in \partial \Omega,
+$$
+$$
+{\bm u(\bm x, 0)} = {\bm u_0}({\bm x}), \quad {\bm x} \in \Omega,
+$$
+где ${\bm u}({\bm x}, t)$ - скорость, $p({\bm x}, t)$ - давление и ${\bm f}({\bm x}, t)$ - внутренний источник движения. В двумерном случае ${\bm x}=(x_1, x_2)$.
+
+Рассматривается тестовая двумерная задача о течении в каверне с подвижной верхней границей. Подвижная верхняя граница означает, что вектор скорости на ней имеет ненулевое значение. Задача решается в безразмерных величинах на единичном квадрате $\Omega$ (рис. \ref{fg:cavity}), c границей $\partial \Omega=\Gamma_1 \cup \Gamma_2$, где на верхней границе $\Gamma_1$ скорость принимает значения ${\bm u}=(1, 0, t)$, в остальной части $\Gamma_2$ поставлено условие ${\bm u}=(0, 0, t)$ для $0<t \leq T$. Внутренние источники отсутствуют - правая часть равна нулю. Решаемая задача имеет следующую постановку:
+\begin{equation}
+\begin{split}
+\frac{\partial {\bm u}({\bm x}, t)}{\partial t} -\Delta {\bm u}({\bm x}, t) + \nabla p({\bm x}, t) &= 0, \\
+\nabla\cdot{\bm u}({\bm x}, t) &= 0, 
+\end{split}
+\quad {\bm x} \in \Omega, \quad 0<t \leq T,
+\label{eq:scheme-main}
+\end{equation} 
+с граничными условиями:
+\begin{equation}
+\begin{split}
+{\bm u(\bm x, t)} &= (1, 0, t), \quad {\bm x} \in \Gamma_1,  \\
+{\bm u(\bm x, t)} &= (0, 0, t), \quad {\bm x} \in \Gamma_2, \\
+\end{split}
+\quad 0<t \leq T,
+\label{eq:scheme-boundary}
+\end{equation} 
+и начальным условием:
+\begin{equation}
+{\bm u(\bm x, 0)} = (0, 0), \quad {\bm x} \in \Omega.
+\label{eq:scheme-start}
+\end{equation}
 
 \begin{figure}
 	\begin{center}
@@ -74,101 +104,272 @@
 	\end{center}
 \end{figure}
 
+
+%\section{Численная реализация}
+%Система уравнений (\ref{eq:scheme-main}) приводится к вариационной постановке.
+
+\section{Вариационная постановка}
+Для решения задачи уравнение (\ref{eq:scheme-main}) приводится к вариационной постановке.
+Введем следующие функциональные пространства используя пространства Соболева ($H$) и Гильберта ($L^2$).
+$$
+V=\{ ({\bm u}, p) : \, {\bm u} \in H(div, \Omega), \, p \in L^2(\Omega) \},
+$$
+$$
+\hat V=\{ ({\bm v}, q) : \, {\bm v} \in H(div, \Omega), \, q \in L^2(\Omega), \, {\bm v}|_{\partial \Omega}=0 \}.
+$$
+Умножим уравнения (\ref{eq:scheme-main}) с неизвестными ${\bm u}, p \in V$  на функции ${\bm v}, q \in \hat V$ соответственно, и возьмем интеграл по $\Omega$:
+$$
+\int_{\Omega} \frac{\partial {\bm u}}{\partial t} \cdot {\bm v} \,dx - \int_{\Omega} \Delta {\bm u} \cdot {\bm v} \,dx + \int_{\Omega} \nabla p \cdot {\bm v} \,dx = 0,
+$$
+$$
+\int_{\Omega} (\nabla \cdot {\bm u}) \cdot q \,dx = 0.
+$$
+Используя формулу Грина, преобразуем оператор Лапласа:
+$$
+\int_{\Omega} \frac{\partial {\bm u}}{\partial t} \cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u} \cdot \nabla {\bm v} \,dx - \int_{\partial \Omega} \frac{\partial {\bm u}}{\partial {\bm n}} \cdot {\bm v} \,dS + \int_{\Omega} \nabla p \cdot {\bm v} \,dx = 0,
+$$
+здесь интеграл по $\partial \Omega$ равен нулю, т.к. функция ${\bm v} | _ {\partial \Omega} = 0$. Общая вариационная постановка в смешанном пространстве $\hat V$ выглядит следующим образом:
+$$
+\int_{\Omega} \frac{\partial {\bm u}}{\partial t} \cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u} \cdot \nabla {\bm v} \,dx + \int_{\Omega} \nabla p \cdot {\bm v} \,dx + \int_{\Omega} (\nabla \cdot {\bm u}) \cdot q \,dx = 0.
+$$
+Расщепление производится по временному слагаемому из первого уравнения из (\ref{eq:scheme-main}). Для каждой схемы строится отдельная вариационная постановка с использованием уже введенных пространств.
+
+
 \section{Схемы}
-Для решения использовано сочетание конечных элементов Тейлора-Худа.
-Используются схемы с объединенным пространством неизвестных (неявная, Кранка-Николсона) и схемы с расщеплением (Дугласа-Рекфорда, Письмана-Рекфорда, локально-сбалансированная).
-В схемах расщепления применяется операторы:
-\begin{equation}
-Nu = -\Delta u,
+%Для решения использовано сочетание конечных элементов Тейлора-Худа.
+%Для применения схемы расщепления исходная система уравнений (\ref{eq:scheme-main}) приводится к операторному виду:
+%$$
+%\frac{\partial {\bm u}}{\partial t} + {\cal N}{\bm u} + {\cal P}{\bm u} = 0,
+%$$
+%где операторы 
+%$$
+%{\cal N}{\bm u} = -\Delta {\bm u},
+%$$
+%$$
+%{\cal P}{\bm u} = \nabla p,
+%$$ 
+%при условии 
+%\begin{equation} \label{eq:scheme-zerodiv}
+%\nabla\cdot {\bm u} = 0.
+%\end{equation}
+%%Расписать свойства операторов
+%Свойства этих операторов позволяют применять следующие схемы расщепления:
+%\begin{itemize}
+%\item схема Дугласа-Рекфорда,
+%\item схема Письмана-Рекфорда,
+%\item покомпонентная схема.
+%\end{itemize}
+%Для сравнения задача решается также с использованием следующих схем без расщепления:
+%\begin{itemize}
+%\item чисто неявная схема,
+%\item схема Кранка-Николсона.
+%\end{itemize}
+%%Расписать про tau n
+%Введем дискретные переменные ${\bm y}$ и $e$ для ${\bm u}$ и $p$ соответственно. Шаг по времени обозначается как $\tau$.
+Схемы расщепления применяются для аппроксимации производной по времени. Введем равномерный шаг по времени $\tau$. Исходное уравнение разделяется на два уравнения путем введения промежуточного значения ${\bm u}^*={\bm u}_h^{n+\frac{1}{2}}$ между временными слоями ${\bm u}_h^n$ и ${\bm u}_h^{n+1}$.
+\paragraph{Схема Дугласа-Рекфорда.} Особенность разбиения состоит в уменьшении размера матрицы для СЛАУ. Вместо составления единого смешанного пространства переменных скорости и давления, вычисления проводятся для скорости и давления по отдельности. 
+\begin{equation} \label{eq:scheme-douglas-1}
+\frac{{\bm u}^{*}-{\bm u}_h^n}{\tau} - \Delta {\bm u}^{*}+{\nabla}p_h^n=0,
 \end{equation}
-\begin{equation}
-Pu = \nabla p, 
+\begin{equation} \label{eq:scheme-douglas-2}
+\frac{{\bm u}_h^{n+1}-{\bm u}_h^n}{\tau} - \Delta {\bm u}^{*}+{\nabla}p_h^{n+1}=0,
 \end{equation}
-при условии $\nabla\cdot u = 0$.
+\begin{equation} \label{eq:scheme-douglas-3}
+\nabla \cdot {\bm u}_h^n = 0.
+\end{equation}
+Вычисление ${\bm u}_h^{n+1}$ и $p_h^{n+1}$ происходит в несколько этапов:
+\begin{enumerate}
+\item 
+Сперва вычисляется ${\bm u}^*$, для этого умножим уравнение (\ref{eq:scheme-douglas-1}) на функцию $\bm v$ и возьмем интеграл по $\Omega$, используя формулу Грина для преобразования оператора Лапласа:
+$$
+\frac{1}{\tau}\int_{\Omega} {\bm u}^*\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}^* \cdot \nabla {\bm v} \,dx = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n}\, dx + \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx.
+$$
+Решается линейная задача $a({\bm v}, {\bm u}^*) = L({\bm v})$, где
+$$
+a({\bm v}, {\bm u}) = \frac{1}{\tau}\int_{\Omega} {\bm u}^*\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}^* \cdot \nabla {\bm v} \,dx,
+$$
+$$
+L({\bm v}) = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n} \,dx + \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx;
+$$
+\item 
+Вычитаем из (\ref{eq:scheme-douglas-2}) уравнение (\ref{eq:scheme-douglas-1}):
+\begin{equation} \label{eq:scheme-douglas-1}
+\frac{{\bm u}_h^{n+1}-{\bm u}^*}{\tau} + {\nabla}(p_h^{n+1} - p_h^n )=0.
+\end{equation}
+Применяем дивергенцию, из равенства ({\ref{eq:scheme-douglas-3}}) первое слагаемое обнуляется:
+$$
+\Delta \gamma = \frac{1}{\tau} \nabla \cdot u^{*},
+$$
+где 
+$$
+\gamma = p_h^{n+1}-p_h^n.
+$$
+Вычисляем $\gamma$ из:
+$$
+a(q, \gamma) = -\int_{\Omega} \nabla \gamma \nabla q \,dx,
+$$
+$$
+L(q) = \frac{1}{\tau} \int_{\Omega} \nabla \cdot {\bm u}^* q \,dx;
+$$
+\item 
+Вычисляем ${\bm u}_h^{n+1}$ из (\ref{eq:scheme-douglas-2}):
+$$
+a({\bm v}, {\bm u}_h^{n+1}) = \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n+1} \cdot {\bm v}\,dx,
+$$
+$$
+L({\bm v}) = \frac{1}{\tau} \int_{\Omega} {\bm u}^* \cdot v \,dx - \int_{\Omega} \nabla \gamma \cdot {\bm v} \,dx;
+$$
+\item 
+Находим $p_h^{n+1}$:
+$$
+a(q, p) = \int_{\Omega} p_h^{n+1} q\,dx,
+$$
+$$
+L(q) = \int_{\Omega} (\gamma + p_h^n) q\,dx.
+$$
+\end{enumerate}
 
-\subsection{Неявная схема}
-Обозначается IM.
-\begin{equation}
-\frac{u^{n+1}-u^n}{\tau} - \Delta u^{n+1}+\nabla p^{n+1}=0,
-\end{equation}
-\begin{equation}
-\nabla \cdot u^{n+1}=0.
-\end{equation}
+%Вычисления проводится в три этапа:
+%\begin{enumerate}
+%\item Вычисляем ${\bm y}^{n+\frac{1}{2}}$ из первого уравнения;
+%\item Вычитаем из (\ref{eq:scheme-douglas-2}) уравнение (\ref{eq:scheme-douglas-1}). Получаем уравнение:
+%\begin{equation} \label{eq:scheme-douglas-add}
+%\frac{{\bm y}^{n+1}-{\bm y}^{n+\frac{1}{2}}}{\tau} + {\cal P}({\bm y}^{n+1}-{\bm y}^{n})=0,
+%\end{equation}
+%где оператор ${\cal P}$ на самом деле работает с давлением $e$. Возьмем дивергенцию от (\ref{eq:scheme-douglas-add}). Используя условие (\ref{eq:scheme-zerodiv}) избавляемся от ${\bm y}^{n+1}$ и вычисляем $\gamma = e^{n+1}-e^{n}$.
+%\item Подставив $\gamma$ в (\ref{eq:scheme-douglas-add}) явно вычислим ${\bm y}^{n+1}$.
+%\end{enumerate}
+\paragraph{Схема Письмана-Рекфорда.} Особенностью схемы является меньший шаг по времени $\tau/2$ и другое использование промежуточного ${\bm u}^*$. Вычисления происходит аналогично схеме Дугласа-Рекфорда.
+$$
+\frac{{\bm u}_h^{*}-{\bm u}_h^n}{\tau/2} - \Delta {\bm u}^{*}+\nabla p_h^n=0,
+$$
+$$
+\frac{{\bm u}^{n+1}-{\bm u}^{*}}{\tau/2} - \Delta {\bm u}^{*}+\nabla p_h^{n+1}=0,
+$$
+$$
+\nabla \cdot {\bm u}_h^n = 0.
+$$
+
+\paragraph{Покомпонентная схема.} Расщепление происходит по физическим компонентам. Так в первое уравнение для скорости, а второе для давления. Вычисления происходит аналогично схеме Дугласа-Рекфорда.
+$$
+\frac{{\bm u}_h^{*}-{\bm u}_h^n}{\tau} - \Delta{\bm u}^{*}=0,
+$$
+$$
+\frac{{\bm u}_h^{n+1}-{\bm u}_h^{*}}{\tau} + \nabla p_h^{n+1}=0,
+$$
+$$
+\nabla \cdot {\bm u}_h^n = 0.
+$$
+
+
+\paragraph{Чисто неявная схема.} Чисто неявная схема приведена для сравнения точности со схемами расщепления.
+$$
+\frac{{\bm u}_h^{n+1}-{\bm u}_h^n}{\tau} - \Delta {\bm u}_h^{n+1}+\nabla p_h^{n+1} = 0,
+$$
+$$
+\nabla \cdot {\bm u}_h^{n+1} = 0.
+$$
+\paragraph{Схема Кранка-Николсона.} Схема приведена для сравнения точности со схемами расщепления.
+$$
+\frac{{\bm u}_h^{n+1}-{\bm u}_h^n}{\tau} - \Delta \frac{{\bm u}_h^{n+1}+{\bm u}_h^n}{2}+\nabla \frac{p_h^{n+1}+p_h^n}{2}=0,
+$$
+$$
+\nabla \cdot \frac{{\bm u}_h^{n+1}+{\bm u}_h^{n}}{2}=0.
+$$
+
+\section{Результат}
+Вычисления проводились на сетках размером $N = 20, 40, 80, 160$, где $N$ это количество узлов на ребре единичного квадрата. Шаг по времени $\tau = 0.01, 0.005, 0.0025$. Для сравнения нормы погрешности вычисляется ``псевдоточное'' решение ${\bm u}_{ex}^n$, чисто неявная схема, на сетке размером $N=200$ и $\tau=0.00125$.
+Вычисление нормы $L_2(\Omega)$ погрешности $\epsilon^n$ для временного слоя $n$:
+$$
+\epsilon^n = \sqrt{\int_{\Omega} ({\bm u}_h^n - {\bm u}_{ex}^n )^2 \, dx}.
+$$
+
+Графики на рис. \ref{fg:scheme-L2-1} - \ref{fg:scheme-L2-4} показывают норму погрешности $L_2(\Omega)$. По оси X временные слои, по оси Y норма. Обозначения схем на рисунках:
+\begin{itemize}
+\item cn - схема Кранка-Николсона,
+\item dr - схема Дугласа-Рекфорда,
+\item im - чисто неявная схема,
+\item ct - покомпонентная схема,
+\item pr - схема Письмана-Рекфорда.
+\end{itemize}
+Схемы расщепления проигрывают по точности чисто неявной и Кранка-Николсона, при этом  схема Письмена-Рекфорда неустойчива на сетке $N=20$ независимо от $\tau$. При увеличении размера сетки схема Дугласа-Рекфорда заметно приближается к неявной и Кранка-Николсона.
+
+График на рис. \ref{fg:scheme-time} показывает что время вычисления по схемам расщепления быстрее чем по неявной и Кранка-Николсона. Таким образом схема Дугласа-Рекфорда наиболее предпочтительная для решения задач данного типа.
+
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=400px]{pics/implicit}
-		\caption{Неявная схема.}
-		\label{fg:velocity-implicit}
+		\includegraphics[width=400px]{data160/error_1}
+		\caption{Норма погрешности скорости в $L_2$ для $N=20$, a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
+		\label{fg:scheme-L2-1}
 	\end{center}
 \end{figure}
 
-\subsection{Схема Кранка-Николсона}
-Обозначается CN.
-\begin{equation}
-\frac{u^{n+1}-u^n}{\tau} - \Delta \frac{u^{n+1}+u^n}{2}+\nabla \frac{p^{n+1}+p^n}{2}=0,
-\end{equation}
-\begin{equation}
-\nabla \cdot \frac{u^{n+1}+u^{n}}{2}=0.
-\end{equation}
-
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=400px]{pics/cn}
-		\caption{Схема Кранка-Николсона.}
-		\label{fg:velocity-cn}
+		\includegraphics[width=400px]{data160/error_2}
+		\caption{Норма погрешности скорости в $L_2$ для $N=40$, a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
+		\label{fg:scheme-L2-2}
 	\end{center}
 \end{figure}
 
-\subsection{Схема расщепления Дугласа-Рекфорда}
-Обозначается DR.
-\begin{equation}
-\frac{u^{n+\frac{1}{2}}-u^n}{\tau} + Nu^{n+\frac{1}{2}}+Pu^n=0,
-\end{equation}
-\begin{equation}
-\frac{u^{n+1}-u^n}{\tau} + Nu^{n+\frac{1}{2}}+Pu^{n+1}=0.
-\end{equation}
-
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=400px]{pics/dr}
-		\caption{Схема расщепления Дугласа-Рекфорда.}
-		\label{fg:velocity-dr}
+		\includegraphics[width=400px]{data160/error_3}
+		\caption{Норма погрешности скорости в $L_2$ для $N=80$, a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
+		\label{fg:scheme-L2-3}
 	\end{center}
 \end{figure}
 
-\subsection{Локально-сбалансированная схема расщепления}
-Обозначается LB.
-\begin{equation}
-\frac{u^{n+\frac{1}{2}}-u^n}{\tau} + Nu^{n+\frac{1}{2}}=0,
-\end{equation}
-\begin{equation}
-\frac{u^{n+1}-u^{n+\frac{1}{2}}}{\tau} + Pu^{n+1}=0.
-\end{equation}
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=400px]{pics/lb}
-		\caption{Локально-сбалансированная схема расщепления.}
-		\label{fg:velocity-lb}
+		\includegraphics[width=400px]{data160/error_4}
+		\caption{Норма погрешности скорости в $L_2$ для $N=160$, a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
+		\label{fg:scheme-L2-4}
 	\end{center}
 \end{figure}
 
-\subsection{Схема расщепления Письмана-Рекфорда}
-Обозначается PR.
-\begin{equation}
-\frac{u^{n+\frac{1}{2}}-u^n}{\tau/2} + Nu^{n+\frac{1}{2}}+Pu^n=0,
-\end{equation}
-\begin{equation}
-\frac{u^{n+1}-u^{n+\frac{1}{2}}}{\tau/2} + Nu^{n+\frac{1}{2}}+Pu^{n+1}=0.
-\end{equation}
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=400px]{pics/pr}
-		\caption{Расщепление Письмана-Рекфорда.}
-		\label{fg:velocity-pr}
+		\includegraphics[width=400px]{data160/scheme-time}
+		\caption{Время вычисления для a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
+		\label{fg:scheme-time}
 	\end{center}
 \end{figure}
 
-\section{Результаты}
+\begin{thebibliography}{9}
+\bibitem{vabishchevich-1999} Самарский А.А., Вабищевич П.Н. Аддитивные схемы для задач математической физики. \newblock --- М.: Наука, 1999. 319~с.
+\end{thebibliography}
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 \begin{table}
     \begin{center}
 	\begin{tabular}{|c|c|c|c|}
@@ -232,6 +433,8 @@ Pu = \nabla p,
 		\label{fg:slice199}
 	\end{center}
 \end{figure}
+
+
 
 
 \end{document}
