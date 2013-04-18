@@ -1,7 +1,7 @@
 #set term postscript eps color
 set term png size 1024, 500
 set key on autotitle columnheader
-#set ylabel 'L2 error'
+#set ylabel "{/Symbol e}"
 #set xlabel 'time layer'
 set yrange [0:0.1]
 #set title 'ololo' offset 0, -1;
