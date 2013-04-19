@@ -149,12 +149,24 @@ $$
 $$
 
 \paragraph{Чисто неявная схема.} Чисто неявная схема приведена для сравнения точности со схемами расщепления.
-$$
+\begin{equation} \label{eq:scheme-impl-1}
 \frac{{\bm u}_h^{n+1}-{\bm u}_h^n}{\tau} - \Delta {\bm u}_h^{n+1}+\nabla p_h^{n+1} = 0,
-$$
+\end{equation}
 $$
 \nabla \cdot {\bm u}_h^{n+1} = 0.
 $$
+Найти такие $({\bm u}_h^{n+1}, p_h^{n+1}) \in V$ для задачи $a(({\bm v},q), ({\bm u}_h^{n+1},p_h^{n+1})) = L(({\bm v},q))$ где
+%1.0/tau*inner(u, v)*dx + inner(grad(u), grad(v))*dx + inner(v, grad(p))*dx + q*div(u)*dx
+\begin{eqnarray}
+a(({\bm v},q), ({\bm u}_h^{n+1},p_h^{n+1})) = \frac{1}{\tau} \int_\Omega {\bm u_h^{n+1}} \cdot {\bm v} \, dx + \int_\Omega \nabla {\bm u_h^{n+1}} \cdot \nabla {\bm v} \, dx + \nonumber\\ 
++ \int_\Omega {\bm v} \cdot \nabla p_h^{n+1} \, dx + \int_\Omega q \nabla \cdot {\bm u_h^{n+1}} \, dx,
+\end{eqnarray}
+%1.0/tau*inner(u0, v)*dx
+$$
+L(({\bm v},q)) = \frac{1}{\tau} \int_\Omega {\bm u}_h^n \cdot {\bm v} \, dx, \quad \forall ({\bm v},q) \in \hat V.
+$$
+
+
 \paragraph{Схема Кранка-Николсона.} Схема приведена для сравнения точности со схемами расщепления.
 $$
 \frac{{\bm u}_h^{n+1}-{\bm u}_h^n}{\tau} - \Delta \frac{{\bm u}_h^{n+1}+{\bm u}_h^n}{2}+\nabla \frac{p_h^{n+1}+p_h^n}{2}=0,
@@ -162,12 +174,35 @@ $$
 $$
 \nabla \cdot \frac{{\bm u}_h^{n+1}+{\bm u}_h^{n}}{2}=0.
 $$
+Сделаем замену переменных:
+$$
+\gamma = \frac{p_h^{n+1} + p_h^{n}}{2}.
+$$
+Ставится задача, найти такие $({\bm u}_h^{n+1}, \gamma) \in V$ для задачи $a(({\bm v},q), ({\bm u}_h^{n+1},\gamma)) = L(({\bm v},q))$ где
+%a = 1.0/tau*inner(u, v)*dx + 0.5*inner(grad(u), grad(v))*dx + inner(v, grad(gamma))*dx + q*div(u)*dx
+%L = 1.0/tau*inner(u0, v)*dx - 0.5*inner(grad(u0), grad(v))*dx
+\begin{eqnarray}
+a(({\bm v}, q), ({\bm u}_h^{n+1}, \gamma)) = \frac{1}{\tau} \int_\Omega {\bm u_h^{n+1}} \cdot {\bm v} \, dx + \frac{1}{2} \int_\Omega \nabla {\bm u_h^{n+1}} \cdot \nabla {\bm v} \, dx + \nonumber\\ 
++ \int_\Omega {\bm v} \cdot \nabla \gamma \, dx + \int_\Omega q \nabla \cdot {\bm u_h^{n+1}} \, dx,
+\end{eqnarray}
+$$
+L(({\bm v},q)) = \frac{1}{\tau} \int_\Omega {\bm u}_h^n \cdot {\bm v} \, dx - \frac{1}{2} \int_\Omega \nabla {\bm u}_h^n \cdot \nabla {\bm v} \, dx, \quad \forall ({\bm v},q) \in \hat V.
+$$
+Находим $p_h^{n+1}$ в задаче $a(q, p_h^{n+1})=L(q)$:
+$$
+a(q, p_h^{n+1})=\int_\Omega p_h^{n+1} q \, dx,
+$$
+$$
+L(q)=\int_\Omega (2\gamma - p_h^{n}) q \, dx.
+$$
 
 \section{Схемы расщепления}
 Расщепление производится по временному слагаемому из уравнения (\ref{eq:scheme-main}). Для каждой схемы строится отдельная вариационная постановка с использованием уже введенных пространств, но принцип преобразования оператора Лапласа и избавление от интеграла по границе сохраняется.
 
-Схемы расщепления применяются для аппроксимации производной по времени. Введем равномерный шаг по времени $\tau$. Исходное уравнение разделяется на два уравнения путем введения промежуточного значения ${\bm u}^*={\bm u}_h^{n+\frac{1}{2}}$ между временными слоями ${\bm u}_h^n$ и ${\bm u}_h^{n+1}$.
-\paragraph{Схема Дугласа-Рекфорда.} Особенность разбиения состоит в уменьшении размера матрицы для СЛАУ. Вместо составления единого смешанного пространства переменных скорости и давления, вычисления проводятся для скорости и давления по отдельности \cite{vabishchevich-1999}. 
+Введем равномерную сетку по времени $\omega_t=\{t^n=n\tau, n=\overline{0,N}, \tau N = T \}$, и определим ${\bm u}({\bm x},t)^n={\bm u}({\bm x}, t^n)$ где $t^n=n\tau$. Также введем промежуточное значения ${\bm u}^*={\bm u}_h^{n+\frac{1}{2}}$ между значениями ${\bm u}_h^n$ и ${\bm u}_h^{n+1}$.
+
+\subsection{Схема Дугласа-Рекфорда}
+Особенность разбиения состоит в уменьшении размера матрицы для СЛАУ. Вместо составления единого смешанного пространства переменных скорости и давления, вычисления проводятся для скорости и давления по отдельности \cite{vabishchevich-1999}. Таким образом, ставится задача найти ${\bm u} \in H$ и $p \in L^2$:
 \begin{equation} \label{eq:scheme-douglas-1}
 \frac{{\bm u}^{*}-{\bm u}_h^n}{\tau} - \Delta {\bm u}^{*}+{\nabla}p_h^n=0,
 \end{equation}
@@ -193,10 +228,10 @@ L({\bm v}) = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n} \,dx + \frac{1}{\tau} \
 $$
 \item 
 Вычитаем из (\ref{eq:scheme-douglas-2}) уравнение (\ref{eq:scheme-douglas-1}):
-\begin{equation} \label{eq:scheme-douglas-1}
+\begin{equation} \label{eq:scheme-douglas-4}
 \frac{{\bm u}_h^{n+1}-{\bm u}^*}{\tau} + {\nabla}(p_h^{n+1} - p_h^n )=0.
 \end{equation}
-Применяем дивергенцию, из равенства ({\ref{eq:scheme-douglas-3}}) первое слагаемое обнуляется:
+Применяем дивергенцию, из равенства ({\ref{eq:scheme-douglas-3}}), первое слагаемое обнуляется:
 $$
 \Delta \gamma = \frac{1}{\tau} \nabla \cdot u^{*},
 $$
@@ -204,7 +239,7 @@ $$
 $$
 \gamma = p_h^{n+1}-p_h^n.
 $$
-Вычисляем $\gamma$ из:
+Вычисляем $\gamma$ из задачи $a(q,\gamma)=L(q)$:
 $$
 a(q, \gamma) = -\int_{\Omega} \nabla \gamma \nabla q \,dx,
 $$
@@ -212,7 +247,7 @@ $$
 L(q) = \frac{1}{\tau} \int_{\Omega} \nabla \cdot {\bm u}^* q \,dx;
 $$
 \item 
-Вычисляем ${\bm u}_h^{n+1}$ из (\ref{eq:scheme-douglas-2}):
+Вычисляем ${\bm u}_h^{n+1}$ из (\ref{eq:scheme-douglas-4}), предварительно преобразовав уравнение в задачу $a({\bm v}, {\bm u}_h^{n+1}) = L({\bm v})$:
 $$
 a({\bm v}, {\bm u}_h^{n+1}) = \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n+1} \cdot {\bm v}\,dx,
 $$
@@ -220,7 +255,7 @@ $$
 L({\bm v}) = \frac{1}{\tau} \int_{\Omega} {\bm u}^* \cdot v \,dx - \int_{\Omega} \nabla \gamma \cdot {\bm v} \,dx;
 $$
 \item 
-Находим $p_h^{n+1}$:
+Находим $p_h^{n+1}$, выполнив обратную замену решим, задачу $a(q,p_h^{n+1})=L(q)$:
 $$
 a(q, p) = \int_{\Omega} p_h^{n+1} q\,dx,
 $$
@@ -239,37 +274,130 @@ $$
 %где оператор ${\cal P}$ на самом деле работает с давлением $e$. Возьмем дивергенцию от (\ref{eq:scheme-douglas-add}). Используя условие (\ref{eq:scheme-zerodiv}) избавляемся от ${\bm y}^{n+1}$ и вычисляем $\gamma = e^{n+1}-e^{n}$.
 %\item Подставив $\gamma$ в (\ref{eq:scheme-douglas-add}) явно вычислим ${\bm y}^{n+1}$.
 %\end{enumerate}
-\paragraph{Схема Письмана-Рекфорда.} Особенностью схемы является меньший шаг по времени $\tau/2$ и другое использование промежуточного ${\bm u}^*$. Вычисления происходит аналогично схеме Дугласа-Рекфорда.
-$$
+\subsection{Схема Письмана-Рекфорда.} Особенностью схемы является меньший шаг по времени $\tau/2$ и другое использование промежуточного ${\bm u}^*$. Вычисления происходит аналогично схеме Дугласа-Рекфорда.
+\begin{equation} \label{eq:scheme-pisman-1}
 \frac{{\bm u}_h^{*}-{\bm u}_h^n}{\tau/2} - \Delta {\bm u}^{*}+\nabla p_h^n=0,
-$$
-$$
+\end{equation}
+\begin{equation} \label{eq:scheme-pisman-2}
 \frac{{\bm u}^{n+1}-{\bm u}^{*}}{\tau/2} - \Delta {\bm u}^{*}+\nabla p_h^{n+1}=0,
-$$
-$$
+\end{equation}
+\begin{equation} \label{eq:scheme-pisman-3}
 \nabla \cdot {\bm u}_h^n = 0.
+\end{equation}
+\begin{enumerate}
+\item 
+Сперва вычисляется ${\bm u}^*$, для этого умножим уравнение (\ref{eq:scheme-pisman-1}) на функцию $\bm v$ и возьмем интеграл по $\Omega$, используя формулу Грина для преобразования оператора Лапласа:
 $$
+\frac{2}{\tau}\int_{\Omega} {\bm u}^*\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}^* \cdot \nabla {\bm v} \,dx = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n}\, dx + \frac{2}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx.
+$$
+Решается линейная задача $a({\bm v}, {\bm u}^*) = L({\bm v})$, где
+$$
+a({\bm v}, {\bm u}) = \frac{2}{\tau}\int_{\Omega} {\bm u}^*\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}^* \cdot \nabla {\bm v} \,dx,
+$$
+$$
+L({\bm v}) = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n} \,dx + \frac{2}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx;
+$$
+\item 
+Вычитаем из (\ref{eq:scheme-pisman-2}) уравнение (\ref{eq:scheme-pisman-1}):
+\begin{equation} \label{eq:scheme-pisman-4}
+\frac{{\bm u}_h^{n+1}-2{\bm u}^* + {\bm u}_h^{n}}{\tau / 2} + {\nabla}(p_h^{n+1} - p_h^n )=0.
+\end{equation}
+Применяем дивергенцию, из равенства ({\ref{eq:scheme-pisman-3}}), слагаемые ${\bm u}_h^n$ и ${\bm u}_h^{n+1}$  обнуляются:
+$$
+\Delta \gamma = \frac{4}{\tau} \nabla \cdot u^{*},
+$$
+где 
+$$
+\gamma = p_h^{n+1}-p_h^n.
+$$
+Вычисляем $\gamma$ из задачи $a(q,\gamma)=L(q)$:
+$$
+a(q, \gamma) = -\int_{\Omega} \nabla \gamma \nabla q \,dx,
+$$
+$$
+L(q) = \frac{4}{\tau} \int_{\Omega} \nabla \cdot {\bm u}^* q \,dx;
+$$
+\item 
+Вычисляем ${\bm u}_h^{n+1}$ из (\ref{eq:scheme-pisman-4}), предварительно преобразовав уравнение в задачу $a({\bm v}, {\bm u}_h^{n+1}) = L({\bm v})$:
+$$
+a({\bm v}, {\bm u}_h^{n+1}) = \int_{\Omega} {\bm u}_h^{n+1} \cdot {\bm v}\,dx,
+$$
+$$
+L({\bm v}) = 2 \int_{\Omega} {\bm u}^* \cdot v \,dx - \int_{\Omega} {\bm u}_h^n \cdot v \,dx - \frac{\tau}{2} \int_{\Omega} \nabla \gamma \cdot {\bm v} \,dx;
+$$
+\item 
+Находим $p_h^{n+1}$, выполнив обратную замену решим, задачу $a(q,p_h^{n+1})=L(q)$:
+$$
+a(q, p) = \int_{\Omega} p_h^{n+1} q\,dx,
+$$
+$$
+L(q) = \int_{\Omega} (\gamma + p_h^n) q\,dx.
+$$
+\end{enumerate}
 
-\paragraph{Покомпонентная схема.} Расщепление происходит по физическим компонентам. Так в первое уравнение для скорости, а второе для давления. Вычисления происходит аналогично схеме Дугласа-Рекфорда.
-$$
+
+\subsection{Покомпонентная схема.} Расщепление происходит по физическим компонентам. Так в первое уравнение для скорости, а второе для давления. Вычисления происходит аналогично схеме Дугласа-Рекфорда.
+\begin{equation} \label{eq:scheme-comp-1}
 \frac{{\bm u}_h^{*}-{\bm u}_h^n}{\tau} - \Delta{\bm u}^{*}=0,
-$$
-$$
+\end{equation} 
+\begin{equation} \label{eq:scheme-comp-2}
 \frac{{\bm u}_h^{n+1}-{\bm u}_h^{*}}{\tau} + \nabla p_h^{n+1}=0,
-$$
-$$
+\end{equation}
+\begin{equation} \label{eq:scheme-comp-3}
 \nabla \cdot {\bm u}_h^n = 0.
+\end{equation}
+\begin{enumerate}
+\item 
+Сперва вычисляется ${\bm u}^*$, для этого умножим уравнение (\ref{eq:scheme-comp-1}) на функцию $\bm v$ и возьмем интеграл по $\Omega$, используя формулу Грина для преобразования оператора Лапласа:
 $$
+\frac{1}{\tau}\int_{\Omega} {\bm u}^*\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}^* \cdot \nabla {\bm v} \,dx = \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx.
+$$
+Решается линейная задача $a({\bm v}, {\bm u}^*) = L({\bm v})$, где
+$$
+a({\bm v}, {\bm u}) = \frac{1}{\tau}\int_{\Omega} {\bm u}^*\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}^* \cdot \nabla {\bm v} \,dx,
+$$
+$$
+L({\bm v}) = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n} \,dx + \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx;
+$$
+\item 
+Применим дивергенцию к уравнению (\ref{eq:scheme-comp-2}), по уравнению (\ref{eq:scheme-comp-3}) слагаемое ${\bm u}_h^{n+1}$ обнуляется. Вычислим $p_h^{n+1}$ из $a(q, p_h^{n+1})=L(q)$:
+$$
+a(q, p_h^{n+1}) = \int_{\Omega} \nabla p_h^{n+1} \nabla q \,dx,
+$$
+$$
+L(q) = \frac{1}{\tau} \int_{\Omega} \nabla \cdot {\bm u}^* q \,dx;
+$$
+\item 
+Вычисляем ${\bm u}_h^{n+1}$ из (\ref{eq:scheme-comp-2}), предварительно преобразовав уравнение в задачу $a({\bm v}, {\bm u}_h^{n+1}) = L({\bm v})$:
+$$
+a({\bm v}, {\bm u}_h^{n+1}) = \int_{\Omega} {\bm u}_h^{n+1} \cdot {\bm v}\,dx,
+$$
+$$
+L({\bm v}) = \int_{\Omega} {\bm u}^* \cdot v \,dx - \tau \int_{\Omega} \nabla p_h^{n+1} \cdot {\bm v} \,dx;
+$$
+\end{enumerate}
+
+\section{Численное сравнение}
+Проведено численное сравнение каждой схемы, на $4$ сетках  с разными размерами $N = 20, 40, 80, 160$, где $N$ это количество узлов на ребре единичного квадрата (рис. \ref{fg:scheme-mesh}). Шаг по времени $\tau = 0.01, 0.005, 0.0025$. Расчетное время $T=0.2$.
+
+\begin{figure}
+	\begin{center}
+		\includegraphics[width=200px]{pics/mesh}
+		\caption{Сетка размером $N=40$.}
+		\label{fg:scheme-mesh}
+	\end{center}
+\end{figure}
 
 
-\section{Результат}
-Вычисления проводились на сетках размером $N = 20, 40, 80, 160$, где $N$ это количество узлов на ребре единичного квадрата. Шаг по времени $\tau = 0.01, 0.005, 0.0025$. Для сравнения нормы погрешности вычисляется ``псевдоточное'' решение ${\bm u}_{ex}^n$, чисто неявная схема, на сетке размером $N=200$ и $\tau=0.00125$.
-Вычисление нормы $L_2(\Omega)$ погрешности $\epsilon^n$ для временного слоя $n$:
+Для сравнения нормы погрешности вычисляется ``псевдоточное'' решение ${\bm u}_{ex}^n$, на чисто неявной схеме (\ref{eq:scheme-impl-1}), на сетке размером $N=200$ и $\tau=0.00125$.
+
+
+Вычисление нормы $L_2(\Omega)$ погрешности $\varepsilon^n$ для временного слоя $n$:
 $$
-\epsilon^n = \sqrt{\int_{\Omega} ({\bm u}_h^n - {\bm u}_{ex}^n )^2 \, dx}.
+\varepsilon^n = \sqrt{\int_{\Omega} ({\bm u}_h^n - {\bm u}_{ex}^n )^2 \, dx}.
 $$
 
-Графики на рис. \ref{fg:scheme-L2-1} - \ref{fg:scheme-L2-4} показывают норму погрешности $L_2(\Omega)$. По оси X временные слои, по оси Y норма. Обозначения схем на рисунках:
+На рис. (\ref{fg:scheme-L2-1}) - (\ref{fg:scheme-L2-4}) представлены графики сравнения норм погрешности $L_2(\Omega)$  для четырех разных сеток (по горизонтальной оси временные слои, по вертикальной оси норма погрешности). Обозначения схем на рисунках:
 \begin{itemize}
 \item cn - схема Кранка-Николсона,
 \item dr - схема Дугласа-Рекфорда,
@@ -277,9 +405,12 @@ $$
 \item ct - покомпонентная схема,
 \item pr - схема Письмана-Рекфорда.
 \end{itemize}
+
+
+
 Схемы расщепления проигрывают по точности чисто неявной и Кранка-Николсона, при этом  схема Письмена-Рекфорда неустойчива на сетке $N=20$ независимо от $\tau$. При увеличении размера сетки схема Дугласа-Рекфорда заметно приближается к неявной и Кранка-Николсона.
 
-График на рис. \ref{fg:scheme-time} показывает что время вычисления по схемам расщепления быстрее чем по неявной и Кранка-Николсона. Таким образом схема Дугласа-Рекфорда наиболее предпочтительная для решения задач данного типа.
+График на рис. (\ref{fg:scheme-time}) показывает, что время вычисления по схемам расщепления быстрее чем по неявной и Кранка-Николсона. Таким образом схема Дугласа-Рекфорда наиболее предпочтительная для решения задач данного типа.
 
 \begin{figure}
 	\begin{center}
