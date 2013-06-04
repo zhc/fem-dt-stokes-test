@@ -54,7 +54,7 @@
 
 \begin{abstract}
 Рассматривается применение схем расщепления для нестационарного уравнения Стокса, которое описывает течение сильно вязкой несжимаемой жидкости. 
-Исходная система связывает в одном уравнение переменные скорости и давления, что при использовании метода конечных элементов, увеличивает количество одновременно решаемых неизвестных. 
+%Исходная система связывает в одном уравнение переменные скорости и давления, что при использовании метода конечных элементов, увеличивает количество одновременно решаемых неизвестных. 
 Исходная система уравнений включает в себя уравнения для давления и скорости, для решения которой необходимо строить общую матрицу. 
 Для сокращения размера матрицы можно применять схемы расщепления, позволяющие расщепить исходную систему связанных уравнений на два раздельных уравнения. Что позволит существенно сократить время счета. Заметим, что подобное расщепление влияет на точность получаемого решения.
 %Путем расщепления неизвестные скорости и давления вычисляются по отдельности, то есть вместо составления матрицы включающей обе неизвестные, используются меньшие размером матрицы. При этом изменяется погрешность и время вычисления численного решения.
@@ -63,12 +63,10 @@
 \section{Математическая модель}
 Нестационарное уравнение Стокса, описывает течение несжимаемой жидкости в области $\Omega$ с границей $\partial \Omega$:
 \begin{equation}
-\left\{
 \begin{aligned}
-\frac{\partial {\bm u}({\bm x}, t)}{\partial t} -\Delta {\bm u}({\bm x}, t) + \nabla p({\bm x}, t) &= {\bm f}({\bm x}, t), \\
-\nabla\cdot{\bm u}({\bm x}, t) &= 0, 
+\frac{\partial {\bm u}}{\partial t} -\Delta {\bm u} + \nabla p &= {\bm f}({\bm x}, t), \\
+\nabla\cdot{\bm u} &= 0, 
 \end{aligned}
-\right.
 \quad {\bm x} \in \Omega, \quad 0<t \leq T,
 \end{equation} 
 $$
@@ -82,29 +80,28 @@ $$
 
 В качестве тестовой модельной задачи, рассчитаем задачу о течении в каверне с подвижной верхней границей. 
 Для задания подвижной границы, необходимо задать на ней ненулевые значения скорости.
-Задача решается на единичном квадрате $\Omega$ (рис. \ref{fg:cavity}), c границей $\partial \Omega=\Gamma_1 \cup \Gamma_2$. На верхней границе $\Gamma_1$ поставлено условие гладкой стенки $({\bm u}, {\bm n}) = 0$, где ${\bm n}$ нормаль границы и движение идет по направлению границы (вправо ${\bm u}=(1, 0, t)$). В остальной части границы $\Gamma_2=\partial \Omega / \Gamma_1$ поставлено условие прилипания ${\bm u}=(0, 0, t)$. Внутренние источники скорости отсутствуют ${\bm f}=(0, 0)$. Таким образом, решаемая задача имеет следующую постановку:
+Задача решается на единичном квадрате $\Omega$ (рис. \ref{fg:cavity}), c границей $\partial \Omega=\Gamma_1 \cup \Gamma_2$. На верхней границе $\Gamma_1$ поставлено условие гладкой стенки $({\bm u}, {\bm n}) = 0$, где ${\bm n}$ нормаль границы и движение идет по направлению границы (направо ${\bm g}({\bm x},t)=(1,0)$). 
+В остальной части границы $\Gamma_2=\partial \Omega / \Gamma_1$ поставлено условие прилипания ${\bm g}({\bm x}, t)={\bm 0}$. Внутренние источники скорости отсутствуют ${\bm f}({\bm x}, t)={\bm 0}$. Таким образом, решаемая задача имеет следующую постановку:
 \begin{equation}
-\left\{
 \begin{aligned}
-\frac{\partial {\bm u}({\bm x}, t)}{\partial t} -\Delta {\bm u}({\bm x}, t) + \nabla p({\bm x}, t) &= 0, \\
-\nabla\cdot{\bm u}({\bm x}, t) &= 0, 
+\frac{\partial {\bm u}}{\partial t} -\Delta {\bm u} + \nabla p &= 0, \\
+\nabla\cdot{\bm u} &= 0, 
 \end{aligned}
-\right.
 \quad {\bm x} \in \Omega, \quad 0<t \leq T,
 \label{eq:scheme-main}
 \end{equation} 
 с граничными условиями:
 \begin{equation}
 \begin{split}
-{\bm u(\bm x, t)} &= (1, 0, t), \quad {\bm x} \in \Gamma_1,  \\
-{\bm u(\bm x, t)} &= (0, 0, t), \quad {\bm x} \in \Gamma_2, \\
+{\bm u(\bm x, t)} &= (1, 0), \quad {\bm x} \in \Gamma_1,  \\
+{\bm u(\bm x, t)} &= {\bm 0}, \quad {\bm x} \in \Gamma_2, \\
 \end{split}
 \quad 0<t \leq T,
 \label{eq:scheme-boundary}
 \end{equation} 
 и начальным условием:
 \begin{equation}
-{\bm u(\bm x, 0)} = (0, 0), \quad {\bm x} \in \Omega.
+{\bm u(\bm x, 0)} = {\bm 0}, \quad {\bm x} \in \Omega.
 \label{eq:scheme-start}
 \end{equation}
 
@@ -119,12 +116,12 @@ $$
 \section{Вариационная постановка}
 Для численного решения задачи методом конечных элементов, уравнение (\ref{eq:scheme-main}) необходимо привести к вариационной постановке \cite{fenicsbook-2012}. Введем следующие функциональные пространства:
 $$
-V=\{ ({\bm u}, p) : \, {\bm u} \in H(div, \Omega), \, p \in L^2(\Omega),  {\bm u}|_{\partial \Omega}=g \},
+V=\{ ({\bm u}, p) : \, {\bm u} \in H(\mathrm{div}, \Omega), \, p \in L^2(\Omega),  {\bm u}|_{\partial \Omega}=g \},
 $$
 $$
-\hat V=\{ ({\bm v}, q) : \, {\bm v} \in H(div, \Omega), \, q \in L^2(\Omega), \, {\bm v}|_{\partial \Omega}=0 \},
+\hat V=\{ ({\bm v}, q) : \, {\bm v} \in H(\mathrm{div}, \Omega), \, q \in L^2(\Omega), \, {\bm v}|_{\partial \Omega}=0 \},
 $$
-где $H$ --- пространства Соболева, $L^2$ --- гильбертово пространство.
+где $H$ --- пространство Соболева, $L^2$ --- гильбертово пространство.
 Умножим уравнения (\ref{eq:scheme-main}) с неизвестными функциями $({\bm u}, p) \in V$  на тестовые функции $({\bm v}, q)$ соответственно, и возьмем интеграл по $\Omega$:
 $$
 \left\{
@@ -143,40 +140,31 @@ $$
 $$
 \int_{\Omega} \frac{\partial {\bm u}}{\partial t} \cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u} \cdot \nabla {\bm v} \,dx - \int_{\Omega} \nabla p \cdot {\bm v} \,dx = 0.
 $$
-Общая вариационная постановка в смешанном пространстве $V$ ставится сумме двух уравнений. Найти $({\bm u}, p) \in V$ такие что:
+Общая вариационная постановка в смешанном пространстве $V$, найти $({\bm u}, p) \in V$ такие что:
 $$
-\int_{\Omega} \frac{\partial {\bm u}}{\partial t} \cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u} \cdot \nabla {\bm v} \,dx + \int_{\Omega} \nabla p \cdot {\bm v} \,dx + \int_{\Omega} (\nabla \cdot {\bm u}) \cdot q \,dx = 0, \quad ({\bm v}, q) \in \hat V
+\int_{\Omega} \frac{\partial {\bm u}}{\partial t} \cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u} \cdot \nabla {\bm v} \,dx + \int_{\Omega} \nabla p \cdot {\bm v} \,dx = 0, 
 $$
-
-\paragraph{Чисто неявная схема.} Чисто неявная схема приведена для сравнения точности со схемами расщепления.
-\begin{equation} \label{eq:scheme-impl-1}
-\frac{{\bm u}_h^{n+1}-{\bm u}_h^n}{\tau} - \Delta {\bm u}_h^{n+1}+\nabla p_h^{n+1} = 0,
-\end{equation}
 $$
-\nabla \cdot {\bm u}_h^{n+1} = 0.
-$$
-Найти такие $({\bm u}_h^{n+1}, p_h^{n+1}) \in V$ для задачи $a(({\bm v},q), ({\bm u}_h^{n+1},p_h^{n+1})) = L(({\bm v},q))$ где
-%1.0/tau*inner(u, v)*dx + inner(grad(u), grad(v))*dx + inner(v, grad(p))*dx + q*div(u)*dx
-\begin{eqnarray}
-a(({\bm v},q), ({\bm u}_h^{n+1},p_h^{n+1})) = \frac{1}{\tau} \int_\Omega {\bm u_h^{n+1}} \cdot {\bm v} \, dx + \int_\Omega \nabla {\bm u_h^{n+1}} \cdot \nabla {\bm v} \, dx + \nonumber\\ 
-+ \int_\Omega {\bm v} \cdot \nabla p_h^{n+1} \, dx + \int_\Omega q \nabla \cdot {\bm u_h^{n+1}} \, dx,
-\end{eqnarray}
-%1.0/tau*inner(u0, v)*dx
-$$
-L(({\bm v},q)) = \frac{1}{\tau} \int_\Omega {\bm u}_h^n \cdot {\bm v} \, dx, \quad \forall ({\bm v},q) \in \hat V.
+\int_{\Omega} (\nabla \cdot {\bm u}) \cdot q \,dx = 0, \quad ({\bm v}, q) \in \hat V.
 $$
 
+\section{Обычные схемы}
+Ниже приведенные схемы являются обычными в том смысле, что рассматривают задачу как общую систему уравнений. При этом неизвестные скорости и давления вычисляются как единая переменная. Введем равномерную сетку по времени $\omega_t=\{t^n=n\tau, n=\overline{0,N}, \tau N = T \}$, и определим ${\bm u}_h^n={\bm u}({\bm x}, t^n)$ где $t^n=n\tau$. Также введем промежуточное значения ${\bm u}^*={\bm u}_h^{n+\frac{1}{2}}$ между значениями ${\bm u}_h^n$ и ${\bm u}_h^{n+1}$.
 
-\paragraph{Схема Кранка-Николсона.} Схема приведена для сравнения точности со схемами расщепления.
+\subsection{Чисто неявная схема.} Чисто неявная схема приведена для сравнения точности со схемами расщепления. Найти такие $({\bm u}_h^{n+1}, p_h^{n+1}) \in V$ для задачи:
+$$
+\frac{1}{\tau} \int_\Omega {\bm u_h^{n+1}} \cdot {\bm v} \, dx + \int_\Omega \nabla {\bm u_h^{n+1}} \cdot \nabla {\bm v} \, dx + \int_\Omega {\bm v} \cdot \nabla p_h^{n+1} \, dx = \frac{1}{\tau} \int_\Omega {\bm u}_h^n \cdot {\bm v} \, dx, 
+$$
+$$
+\int_\Omega q \nabla \cdot {\bm u_h^{n+1}} \, dx = 0, \quad \forall ({\bm v},q) \in \hat V.
+$$
+
+\subsection{Схема Кранка-Николсона.} Схема приведена для сравнения точности со схемами расщепления.
 $$
 \frac{{\bm u}_h^{n+1}-{\bm u}_h^n}{\tau} - \Delta \frac{{\bm u}_h^{n+1}+{\bm u}_h^n}{2}+\nabla \frac{p_h^{n+1}+p_h^n}{2}=0,
 $$
 $$
 \nabla \cdot \frac{{\bm u}_h^{n+1}+{\bm u}_h^{n}}{2}=0.
-$$
-Сделаем замену переменных:
-$$
-\gamma = \frac{p_h^{n+1} + p_h^{n}}{2}.
 $$
 Ставится задача, найти такие $({\bm u}_h^{n+1}, \gamma) \in V$ для задачи $a(({\bm v},q), ({\bm u}_h^{n+1},\gamma)) = L(({\bm v},q))$ где
 %a = 1.0/tau*inner(u, v)*dx + 0.5*inner(grad(u), grad(v))*dx + inner(v, grad(gamma))*dx + q*div(u)*dx
@@ -188,16 +176,24 @@ a(({\bm v}, q), ({\bm u}_h^{n+1}, \gamma)) = \frac{1}{\tau} \int_\Omega {\bm u_h
 $$
 L(({\bm v},q)) = \frac{1}{\tau} \int_\Omega {\bm u}_h^n \cdot {\bm v} \, dx - \frac{1}{2} \int_\Omega \nabla {\bm u}_h^n \cdot \nabla {\bm v} \, dx, \quad \forall ({\bm v},q) \in \hat V.
 $$
-Находим $p_h^{n+1}$ в задаче $a(q, p_h^{n+1})=L(q)$:
+Сделаем замену переменных:
 $$
-a(q, p_h^{n+1})=\int_\Omega p_h^{n+1} q \, dx,
+\gamma = \frac{p_h^{n+1} + p_h^{n}}{2}.
 $$
+Ставится задача, найти такие $({\bm u}_h^{n+1}, \gamma) \in V$ для задачи:
+\begin{eqnarray}
+\frac{1}{\tau} \int_\Omega {\bm u_h^{n+1}} \cdot {\bm v} \, dx + \frac{1}{2} \int_\Omega \nabla {\bm u_h^{n+1}} \cdot \nabla {\bm v} \, dx + \int_\Omega {\bm v} \cdot \nabla \gamma \, dx = \nonumber\\  = \frac{1}{\tau} \int_\Omega {\bm u}_h^n \cdot {\bm v} \, dx - \frac{1}{2} \int_\Omega \nabla {\bm u}_h^n \cdot \nabla {\bm v} \, dx,
+\end{eqnarray}
 $$
-L(q)=\int_\Omega (2\gamma - p_h^{n}) q \, dx.
+\int_\Omega q \nabla \cdot {\bm u_h^{n+1}} \, dx = - \int_\Omega q \nabla \cdot {\bm u_h^{n}} \, dx, \quad \forall ({\bm v},q) \in \hat V.
+$$
+Находим $p_h^{n+1}$ из задачи:
+$$
+\int_\Omega p_h^{n+1} q \, dx = \int_\Omega (2\gamma - p_h^{n}) q \, dx, \quad q \in L^2.
 $$
 
 \section{Схемы расщепления}
-Расщепление производится по временному слагаемому из уравнения (\ref{eq:scheme-main}). Для каждой схемы строится отдельная вариационная постановка с использованием уже введенных пространств, но принцип преобразования оператора Лапласа и избавление от интеграла по границе сохраняется.
+Расщепление производится по временному слагаемому из уравнения (\ref{eq:scheme-main}). Для каждой схемы строится отдельная вариационная постановка с использованием уже введенных пространств, принцип преобразования оператора Лапласа и избавление от интеграла по границе сохраняется.
 
 Введем равномерную сетку по времени $\omega_t=\{t^n=n\tau, n=\overline{0,N}, \tau N = T \}$, и определим ${\bm u}({\bm x},t)^n={\bm u}({\bm x}, t^n)$ где $t^n=n\tau$. Также введем промежуточное значения ${\bm u}^*={\bm u}_h^{n+\frac{1}{2}}$ между значениями ${\bm u}_h^n$ и ${\bm u}_h^{n+1}$.
 

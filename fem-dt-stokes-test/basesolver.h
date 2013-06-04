@@ -24,7 +24,7 @@ protected:
     dolfin::BoundaryCondition* createNoslipBC(dolfin::FunctionSpace& space);
     dolfin::BoundaryCondition* createPinpointBC(dolfin::FunctionSpace& space);
 
-    dolfin::UnitSquare _mesh;
+    dolfin::UnitSquareMesh _mesh;
     std::vector<const dolfin::BoundaryCondition*> bcs;
     std::vector<const BoundaryCondition*> bcs1;
     std::vector<const BoundaryCondition*> bcs2;

@@ -10990,6 +10990,14 @@ public:
     {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.78379396366386, 0.78379396366386, 0.0, 0.432412072672279, -0.432412072672279, 0.0, 0.0, 0.0, 0.0},
     {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.56758792732772, 0.78379396366386, 0.0, 1.78379396366386, -1.78379396366386, -1.35138189099158, 0.0, 0.0, 0.0}};
     
+    static const double FE0_C2[6][15] = \
+    {{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.09157621350977, 0.816847572980459, 0.091576213509771},
+    {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0915762135097701, 0.0915762135097711, 0.816847572980459},
+    {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.816847572980458, 0.091576213509771, 0.091576213509771},
+    {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.445948490915965, 0.10810301816807, 0.445948490915965},
+    {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.445948490915965, 0.445948490915965, 0.10810301816807},
+    {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.10810301816807, 0.445948490915965, 0.445948490915965}};
+    
     // Reset values in the element tensor.
     for (unsigned int r = 0; r < 15; r++)
     {
@@ -11000,7 +11008,7 @@ public:
     // Optimisations: ('eliminate zeros', False), ('ignore ones', False), ('ignore zero tables', False), ('optimisation', False), ('remove zero terms', False)
     
     // Loop quadrature points for integral.
-    // Number of operations to compute element tensor for following IP loop = 4770
+    // Number of operations to compute element tensor for following IP loop = 5670
     for (unsigned int ip = 0; ip < 6; ip++)
     {
       
@@ -11015,19 +11023,19 @@ public:
       // Total number of operations to compute function values = 180
       for (unsigned int r = 0; r < 15; r++)
       {
-        F0 += FE0_C0[ip][r]*w[0][r];
-        F1 += FE0_C1[ip][r]*w[0][r];
-        F2 += FE0_C0_D10[ip][r]*w[0][r];
-        F3 += FE0_C0_D01[ip][r]*w[0][r];
-        F4 += FE0_C1_D10[ip][r]*w[0][r];
-        F5 += FE0_C1_D01[ip][r]*w[0][r];
+        F0 += FE0_C0_D10[ip][r]*w[0][r];
+        F1 += FE0_C0_D01[ip][r]*w[0][r];
+        F2 += FE0_C1_D10[ip][r]*w[0][r];
+        F3 += FE0_C1_D01[ip][r]*w[0][r];
+        F4 += FE0_C0[ip][r]*w[0][r];
+        F5 += FE0_C1[ip][r]*w[0][r];
       }// end loop over 'r'
       
-      // Number of operations for primary indices: 615
+      // Number of operations for primary indices: 765
       for (unsigned int j = 0; j < 15; j++)
       {
-        // Number of operations to compute entry: 41
-        A[j] += (((FE0_C0[ip][j]*F0 + FE0_C1[ip][j]*F1))*1.0/(w[1][0]) + ((((((K[0]*FE0_C0_D10[ip][j] + K[2]*FE0_C0_D01[ip][j]))*((K[0]*F2 + K[2]*F3)) + ((K[0]*FE0_C1_D10[ip][j] + K[2]*FE0_C1_D01[ip][j]))*((K[0]*F4 + K[2]*F5))) + (((K[1]*FE0_C1_D10[ip][j] + K[3]*FE0_C1_D01[ip][j]))*((K[1]*F4 + K[3]*F5)) + ((K[1]*FE0_C0_D10[ip][j] + K[3]*FE0_C0_D01[ip][j]))*((K[1]*F2 + K[3]*F3)))))*0.5)*(-1.0))*W6[ip]*det;
+        // Number of operations to compute entry: 51
+        A[j] += ((FE0_C2[ip][j]*(((K[1]*F2 + K[3]*F3) + (K[0]*F0 + K[2]*F1))))*(-1.0) + (((FE0_C1[ip][j]*F5 + FE0_C0[ip][j]*F4))*1.0/(w[1][0]) + ((((((K[0]*FE0_C0_D10[ip][j] + K[2]*FE0_C0_D01[ip][j]))*((K[0]*F0 + K[2]*F1)) + ((K[0]*FE0_C1_D10[ip][j] + K[2]*FE0_C1_D01[ip][j]))*((K[0]*F2 + K[2]*F3))) + (((K[1]*FE0_C1_D10[ip][j] + K[3]*FE0_C1_D01[ip][j]))*((K[1]*F2 + K[3]*F3)) + ((K[1]*FE0_C0_D10[ip][j] + K[3]*FE0_C0_D01[ip][j]))*((K[1]*F0 + K[3]*F1)))))*0.5)*(-1.0)))*W6[ip]*det;
       }// end loop over 'j'
     }// end loop over 'ip'
   }
@@ -11265,7 +11273,7 @@ public:
   /// Return a string identifying the form
   virtual const char* signature() const
   {
-    return "53bae884c10c03f176c413710d06e4ec72981ccebbf143c29785dca2b68fa3bbbc4bde9d024539435afd7f7f6a0935ec05978f9cc67e800ce7bae56108c274f5";
+    return "b52fd7c2fff21543ae482a3376fec194b286524930ccef2798b508c3c16db78377496c60437323dc6fcbf81355cf8f44174608a9deac2e49b917398428eb127d";
   }
 
   /// Return the rank of the global tensor (r)
