@@ -8,6 +8,7 @@
 \usepackage{multirow}
 \usepackage{amsmath}
 \usepackage{bm}
+\usepackage{tikz}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
@@ -69,8 +70,8 @@
 \end{equation*} 
 $$
 \begin{aligned}
-{\bm u(0)} &= {\bm u^0}, \quad {\bm x} \in \Omega, \\
-{\bm u |_{\partial \Omega} } &= {\bm g}({\bm x}, t), \quad 0<t \leq T,
+{\bm u({\bm x}, 0)} &= {\bm u^0}({\bm x}), \quad {\bm x} \in \Omega, \\
+{\bm u({\bm x}, t)} &= {\bm g}({\bm x}, t), \quad {\bm x} \in \partial\Omega, \quad 0<t \leq T,
 \end{aligned}
 $$
 где ${\bm u}({\bm x}, t)$ - скорость, $p({\bm x}, t)$ - давление и ${\bm f}({\bm x}, t)$ - внутренний источник движения. В двумерном случае ${\bm x}=(x_1, x_2)$.
@@ -81,7 +82,7 @@ $$
 В остальной части границы $\Gamma_2=\partial \Omega / \Gamma_1$ поставлено условие прилипания ${\bm g}({\bm x}, t)={\bm 0}$. Внутренние источники скорости отсутствуют ${\bm f}({\bm x}, t)={\bm 0}$. Таким образом, решаемая задача имеет следующую постановку:
 \begin{equation}
 \begin{aligned}
-\frac{\partial {\bm u}}{\partial t} -\Delta {\bm u} + \nabla p &= 0, \\
+\frac{\partial {\bm u}}{\partial t} -\Delta {\bm u} + \nabla p &= {\bm 0}, \\
 \nabla\cdot{\bm u} &= 0, 
 \end{aligned}
 \quad {\bm x} \in \Omega, \quad 0<t \leq T,
@@ -90,35 +91,58 @@ $$
 с граничными условиями:
 \begin{equation}
 \begin{split}
-{\bm u |_{\Gamma_1}} &= \{1, 0\}, \\
-{\bm u |_{\Gamma_2}} &= {\bm 0},  \\
+{\bm u({\bm x}, t)} &= \{1, 0\}, \quad {\bm x} \in \Gamma_1, \\
+{\bm u({\bm x}, t)} &= {\bm 0}, \quad {\bm x} \in \Gamma_2, \\
 \end{split}
 \quad 0<t \leq T,
 \label{eq:scheme-boundary}
 \end{equation} 
 и начальным условием:
 \begin{equation}
-{\bm u(0)} = {\bm 0}, \quad {\bm x} \in \Omega.
+{\bm u({\bm x}, 0)} = {\bm 0}, \quad {\bm x} \in \Omega.
 \label{eq:scheme-start}
 \end{equation}
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=200px]{pics/cavity400}
+\begin{tikzpicture}
+	\tikzstyle{every node} =[font=\large];
+	\path [fill=gray!20!white] (0,0) -- (0, 5) -- (5, 5) -- (5, 0) -- (0, 0);    
+	\draw [<->, line width=2](6,0) -- (0, 0) -- (0, 6);    
+    	\draw [blue, line width=2] (0,0) -- (0, 5) -- (5, 5) -- (5, 0) -- (0, 0);    
+    \draw [red, line width=2] (0, 5) -- (5, 5);
+    \node at (-0.5, -0.5) {$0$};
+    \node at (-0.5, 6) {$x_2$};
+    \node at (6, -0.5) {$x_1$};
+    \node at (-0.5, 5) {$1$};
+    \node at (5, -0.5) {$1$};
+    
+    \node at (2.5, 4.5) {${\bm u} = \{1, 0\}$};
+    %\node at (4.5, 2.5) {${\bm u} = {\bm 0}$};
+    %\node at (0.5, 2.5) {${\bm u} = {\bm 0}$};
+    \node at (2.5, 0.5) {${\bm u} = {\bm 0}$};
+    
+    \node at (2.5, 5.5) {$\Gamma_1$};    
+    \node at (2.5, -0.5) {$\Gamma_2$};
+    \node at (-0.5, 2.5) {$\Gamma_2$};
+    \node at (5.5, 2.5) {$\Gamma_2$};
+    
+    \node at (2.5, 2.5) {$\Omega$};
+\end{tikzpicture}
 		\caption{Расчетная область.}
 		\label{fg:cavity}
 	\end{center}
 \end{figure}
 
 \section{Вариационная постановка}
-Для численного решения задачи методом конечных элементов, уравнение (\ref{eq:scheme-main}) необходимо привести к вариационной постановке \cite{fenicsbook-2012}. Введем следующие функциональные пространства:
+Для численного решения задачи методом конечных элементов, уравнение (\ref{eq:scheme-main}) необходимо привести к вариационной постановке \cite{fenicsbook-2012}. Введем следующие функциональные пространства \cite{guzman-2011}:
 $$
 V=\{ ({\bm u}, p) : \, {\bm u} \in H(\mathrm{div}, \Omega), \, p \in L^2(\Omega),  {\bm u}|_{\partial \Omega}= {\bm g} \},
 $$
 $$
 \hat V=\{ ({\bm v}, q) : \, {\bm v} \in H(\mathrm{div}, \Omega), \, q \in L^2(\Omega), \, {\bm v}|_{\partial \Omega}={\bm 0} \},
 $$
-где $H$ --- пространство Соболева, $L^2$ --- гильбертово пространство.
+где $L^2(\Omega)$ --- гильбертово пространство, $H(\mathrm{div}, \Omega) = \{{\bm u} \in [L^2(\Omega)]^2 : \nabla\cdot {\bm u} \in L^2(\Omega)\}$ --- функциональное пространство Соболева.
 Умножим уравнения (\ref{eq:scheme-main}) с неизвестными функциями $({\bm u}, p) \in V$  на тестовые функции $({\bm v}, q)$ соответственно, и возьмем интеграл по области $\Omega$:
 $$
 \begin{aligned}
@@ -146,24 +170,30 @@ $$
 
 \section{Схемы без расщепления}
 Здесь рассмотрены две схемы, которые являются частными случаями схемы с весами.
-Скорость и давление вычисляются как единая переменная в системе уравнений. Введем равномерную сетку по времени $\omega_t=\{t^n=n\tau, \, n=\overline{0,N}, \, \tau N = T \}$, и определим ${\bm u}_h^n={\bm u}({\bm x}, t^n)$ где $t^n=n\tau$. Решение системы вычисляется как общая сеточная функция $({\bm u}_h^{n+1}, p_h^{n+1}) \in V$. После ее определения, функции для скорости и давления находятся путем разделения.
+Скорость и давление вычисляются как единая переменная в системе уравнений. 
+Для поиска решения методом конечных элементов, введем подпространства сеточных функций $V_h \subset V$ и  ${\hat V}_h \subset {\hat V}$.
+Введем равномерную сетку по времени $\omega_t=\{t^n=n\tau, \, n=0,1,...,N, \, \tau N = T \}$, и определим ${\bm u}_h^n={\bm u}({\bm x}, t^n)$ где $t^n=n\tau$. Решение системы вычисляется как общая сеточная функция $({\bm u}_h^{n+1}, p_h^{n+1}) \in V_h$. После ее определения, функции для скорости и давления находятся путем разделения.
 
-\subsection{Чисто неявная схема.} Чисто неявная схема приведена для сравнения точности со схемами расщепления. 
-Найти такие $({\bm u}_h^{n+1}, p_h^{n+1}) \in V$ для задачи:
+\subsection{Чисто неявная схема} 
+Чисто неявная схема приведена для сравнения точности со схемами расщепления. 
+Погрешность аппроксимации по времени $O(\tau)$.
+Найти такие $({\bm u}_h^{n+1}, p_h^{n+1}) \in V_h$ для задачи:
 \begin{equation} \label{eq:scheme-impl-1}
 \frac{1}{\tau} \int_\Omega {\bm u_h^{n+1}} \cdot {\bm v} \, dx + \int_\Omega \nabla {\bm u_h^{n+1}} \cdot \nabla {\bm v} \, dx + \int_\Omega {\bm v} \cdot \nabla p_h^{n+1} \, dx = \frac{1}{\tau} \int_\Omega {\bm u}_h^n \cdot {\bm v} \, dx, 
 \end{equation}
 $$
-\int_\Omega q \nabla \cdot {\bm u_h^{n+1}} \, dx = 0, \quad \forall ({\bm v},q) \in \hat V.
+\int_\Omega q \nabla \cdot {\bm u_h^{n+1}} \, dx = 0, \quad \forall ({\bm v},q) \in \hat V_h.
 $$
 
-\subsection{Схема Кранка-Николсона.} Схема приведена для сравнения точности со схемами расщепления.
-Найти такие $({\bm u}_h^{n+1}, p_h^{n+1}) \in V$ для задачи:
+\subsection{Схема Кранка-Николсона} 
+Схема приведена для сравнения точности со схемами расщепления.
+Погрешность аппроксимации по времени $O(\tau^2)$.
+Найти такие $({\bm u}_h^{n+1}, p_h^{n+1}) \in V_h$ для задачи:
 \begin{eqnarray*}
 \frac{1}{\tau} \int_\Omega {\bm u_h^{n+1}} \cdot {\bm v} \, dx + \frac{1}{2} \int_\Omega \nabla {\bm u_h^{n+1}} \cdot \nabla {\bm v} \, dx + \int_\Omega {\bm v} \cdot \nabla p_h^{n+1} \, dx = \nonumber\\  = \frac{1}{\tau} \int_\Omega {\bm u}_h^n \cdot {\bm v} \, dx - \frac{1}{2} \int_\Omega \nabla {\bm u}_h^n \cdot \nabla {\bm v} \, dx - \int_\Omega {\bm v} \cdot \nabla p_h^{n} \, dx ,
 \end{eqnarray*}
 $$
-\int_\Omega q \nabla \cdot {\bm u_h^{n+1}} \, dx = 0, \quad \forall ({\bm v},q) \in \hat V.
+\int_\Omega q \nabla \cdot {\bm u_h^{n+1}} \, dx = 0, \quad \forall ({\bm v},q) \in \hat V_h.
 $$
 
 \section{Схемы расщепления}
@@ -172,15 +202,27 @@ $$
 Показана неотрицательная определенность расщепляемых операторов.
 Для каждой схемы строится отдельная вариационная постановка с использованием уже введенных пространств, принцип преобразования оператора Лапласа и избавление от интеграла по границе сохраняется. Введем ${\bm u}_h^{n+\frac{1}{2}}$ как промежуточное значение между значения скорости на различных временных слоях ${\bm u}_h^n$ и ${\bm u}_h^{n+1}$.
 
-\subsection{Аддитивные операторы}
+Введем следующие функциональные пространства \cite{guzman-2011}:
+$$
+H=\{ {\bm u} \in H(\mathrm{div}, \Omega), \, {\bm u}|_{\partial \Omega}= {\bm g} \},
+$$
+$$
+\hat{H}=\{ {\bm v} \in H(\mathrm{div}, \Omega), \, {\bm v}|_{\partial \Omega}={\bm 0} \},
+$$
+$$
+\Pi=\{ p \in L^2(\Omega) \},
+$$
+где $L^2(\Omega)$ --- гильбертово пространство, $H(\mathrm{div}, \Omega) = \{{\bm u} \in [L^2(\Omega)]^2 : \nabla\cdot {\bm u} \in L^2(\Omega)\}$ --- функциональное пространство Соболева. Выделим подпространства сеточных функций $H_h \subset H, \, \hat{H}_h \subset \hat{H}, \, \Pi_h \subset \Pi$.
+
+\subsection{Расщепляемые операторы}
 Уравнение (\ref{eq:scheme-main}) запишем в операторном виде:
 $$
 \frac{\partial {\bm u}}{\partial t} + A {\bm u} = {\bm 0},
 $$
 где оператор $A=A_1 + A_2$ аддитивный оператор:
-$$A_1 {\bm u} = - \Delta {\bm u}, \quad u|_{\partial \Omega} = {\bm 0},$$
+$$A_1 {\bm u} = - \Delta {\bm u}, \quad {\bm u} = {\bm 0}, \quad {\bm x} \in {\partial \Omega}$$
 $$A_2 {\bm u} = \nabla p, \quad \nabla \cdot {\bm u} = 0.$$
-Оператор $A_1$ определен на ${\bm u}$ принимающих на границе $\partial \Omega$ значение ноль вектор, $A_2$ определен при условии $\nabla \cdot {\bm u} = 0.$
+Оператор $A_1$ определен на функциях ${\bm u}$ принимающих на границе $\partial \Omega$ значение ноль вектор, $A_2$ определен при условии $\nabla \cdot {\bm u} = 0.$
 
 Рассмотрим $(A_1 {\bm u}, {\bm u})$:
 $$
@@ -197,7 +239,7 @@ $$
 \int_{\Omega} \nabla \cdot (p{\bm u}) \, dx = \int_{\partial \Omega} (p{\bm u}) \cdot {\bm n} \, dx,
 $$ 
 где ${\bm u}$ принимает значение ноль на границе $\partial \Omega$. Второе слагаемое ноль т.к. $\nabla \cdot {\bm u} = 0$. Таким образом $(A_2 {\bm u}, {\bm u}) \geq 0$.
-При неотрицательно определенных операторах $A_1$ и $A_2$ работает теория аддитивных схем \cite{vabishchevich-1999}.
+Для использования схем расщепления достаточно показать неотрицательность операторов $A_1$ и $A_2$ \cite{vabishchevich-1999}.
 
 \subsection{Схема Дугласа-Рекфорда}
 Схема записывается в виде:
@@ -211,22 +253,22 @@ $$
 \nabla \cdot {\bm u}_h^n = 0.
 \end{equation}
 
-Вычисление ${\bm u}_h^{n+1}$ и $p_h^{n+1}$ происходит в несколько этапов:
+Вычисление ${\bm u}_h^{n+1} \in H_h$ и $p_h^{n+1} \in \Pi_h$ происходит в несколько этапов:
 \begin{enumerate}
 \item 
-Вычислим ${\bm u}_h^{n + \frac{1}{2}}$, для этого умножим уравнение (\ref{eq:scheme-douglas-1}) на функцию ${\bm v} \in H$ и возьмем интеграл по $\Omega$:
+Вычислим ${\bm u}_h^{n + \frac{1}{2}}$, для этого умножим уравнение (\ref{eq:scheme-douglas-1}) на функцию ${\bm v} \in \hat H_h$ и возьмем интеграл по $\Omega$:
 $$
 \frac{1}{\tau}\int_{\Omega} {\bm u}_h^{n + \frac{1}{2}}\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}_h^{n + \frac{1}{2}} \cdot \nabla {\bm v} \,dx = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n}\, dx + \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx.
 $$
 
-\item Вычислим $p_h^{n+1}$. Для этого возьмем в дивергенцию уравнение ({\ref{eq:scheme-douglas-2}}) и применим  ({\ref{eq:scheme-douglas-3}}), умножив на $q \in \Pi$:
+\item Вычислим $p_h^{n+1}$. Для этого возьмем в дивергенцию уравнение ({\ref{eq:scheme-douglas-2}}) и применим  ({\ref{eq:scheme-douglas-3}}), умножив на $q \in \Pi_h$:
 $$
--\int_{\Omega} \nabla p_h^{n+1} \nabla q \,dx = \frac{1}{\tau} \int_{\Omega} \nabla \cdot {\bm u}^* q \,dx + \int_{\Omega} \nabla p_h^{n} \nabla q \,dx
+-\int_{\Omega} \nabla p_h^{n+1} \nabla q \,dx = \frac{1}{\tau} \int_{\Omega} \nabla \cdot {\bm u}^* q \,dx + \int_{\Omega} \nabla p_h^{n} \nabla q \,dx.
 $$
 \item 
 Вычислим ${\bm u}_h^{n+1}$ из (\ref{eq:scheme-douglas-2}), предварительно преобразовав уравнение в вариационную постановку:
 $$
-\frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n+1} \cdot {\bm v}\,dx = \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n+\frac{1}{2}} \cdot v \,dx - \int_{\Omega} \nabla (p_h^{n+1}-p_h^{n}) \cdot {\bm v} \,dx;
+\frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n+1} \cdot {\bm v}\,dx = \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n+\frac{1}{2}} \cdot v \,dx - \int_{\Omega} \nabla (p_h^{n+1}-p_h^{n}) \cdot {\bm v} \,dx.
 $$
 \end{enumerate}
 
@@ -243,24 +285,24 @@ $$
 \end{equation}
 \begin{enumerate}
 \item 
-Вычислим ${\bm u}_h^{n+\frac{1}{2}}$, для этого умножим уравнение (\ref{eq:scheme-pisman-1}) на функцию ${\bm v} \in H$ и возьмем интеграл по $\Omega$:
+Вычислим ${\bm u}_h^{n+\frac{1}{2}}$, для этого умножим уравнение (\ref{eq:scheme-pisman-1}) на функцию ${\bm v} \in \hat H_h$ и возьмем интеграл по $\Omega$:
 $$
 \frac{2}{\tau}\int_{\Omega} {\bm u}_h^{n+\frac{1}{2}}\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}_h^{n+\frac{1}{2}} \cdot \nabla {\bm v} \,dx = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n}\, dx + \frac{2}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx.
 $$
 \item 
-Вычислим $p_h^{n+1}$, для этого вычтем из (\ref{eq:scheme-pisman-2}) уравнение (\ref{eq:scheme-pisman-1}). Применив дивергенцию (\ref{eq:scheme-pisman-3}), умножим на $q \in \Pi$:
+Вычислим $p_h^{n+1} \in \Pi_h$, для этого вычтем из (\ref{eq:scheme-pisman-2}) уравнение (\ref{eq:scheme-pisman-1}). Применив дивергенцию (\ref{eq:scheme-pisman-3}), умножим на $q \in \Pi_h$:
 $$
 -\int_{\Omega} \nabla p_h^{n+1} \nabla q \,dx = \frac{4}{\tau} \int_{\Omega} \nabla \cdot {\bm u}_h^{n+1} q \,dx + \int_{\Omega} \nabla p_h^{n} \nabla q \,dx.
 $$
 \item 
-Вычисляем ${\bm u}_h^{n+1}$, предварительно преобразовав уравнение (\ref{eq:scheme-pisman-2}):
+Вычисляем ${\bm u}_h^{n+1} \in H_h$, предварительно преобразовав уравнение (\ref{eq:scheme-pisman-2}):
 $$
 \int_{\Omega} {\bm u}_h^{n+1} \cdot {\bm v}\,dx =  2 \int_{\Omega} {\bm u}_h^{n+\frac{1}{2}} \cdot v \,dx - \int_{\Omega} {\bm u}_h^n \cdot v \,dx - \frac{\tau}{2} \int_{\Omega} \nabla (p_h^{n+1} - p_h^n) \cdot {\bm v} \,dx.
 $$
 \end{enumerate}
 
-\subsection{Покомпонентная схема} 
-Расщепление происходит по физическим компонентам. Так в первое уравнение для скорости, а второе для давления. Схема записывается в виде:
+\subsection{Схема расщепления по компонентам} 
+Расщепление происходит по физическим компонентам. Так в первом уравнении полностью игнорируется слагаемое для давления. Во втором уравнение оставили оператор с давлением. Схема записывается в виде:
 \begin{equation} \label{eq:scheme-comp-1}
 \frac{{\bm u}_h^{n+\frac{1}{2}}-{\bm u}_h^n}{\tau} + A_1 {\bm u}^{n+\frac{1}{2}}=0,
 \end{equation} 
@@ -272,17 +314,17 @@ $$
 \end{equation}
 \begin{enumerate}
 \item 
-Вычислим ${\bm u}_h^{n+\frac{1}{2}}$, для этого умножим уравнение (\ref{eq:scheme-comp-1}) на функцию ${\bm v} \in H$ и возьмем интеграл по $\Omega$:
+Вычислим ${\bm u}_h^{n+\frac{1}{2}}$, для этого умножим уравнение (\ref{eq:scheme-comp-1}) на функцию ${\bm v} \in \hat H_h$ и возьмем интеграл по $\Omega$:
 $$
 \frac{1}{\tau}\int_{\Omega} {\bm u}_h^{n+\frac{1}{2}}\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}_h^{n+\frac{1}{2}} \cdot \nabla {\bm v} \,dx = \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx.
 $$
 \item 
-Применим дивергенцию к уравнению (\ref{eq:scheme-comp-2}), по уравнению (\ref{eq:scheme-comp-3}) слагаемое ${\bm u}_h^{n+1}$ обнуляется. Умножив на $q \in \Pi$ и взяв интеграл, вычислим $p_h^{n+1}$:
+Применим дивергенцию к уравнению (\ref{eq:scheme-comp-2}), по уравнению (\ref{eq:scheme-comp-3}) слагаемое ${\bm u}_h^{n+1}$ обнуляется. Умножив на $q \in \Pi_h$ и взяв интеграл, вычислим $p_h^{n+1} \in \Pi_h$:
 $$
 \int_{\Omega} \nabla p_h^{n+1} \nabla q \,dx = \frac{1}{\tau} \int_{\Omega} \nabla \cdot {\bm u}_h^{n+\frac{1}{2}} q \,dx.
 $$
 \item 
-Вычислим ${\bm u}_h^{n+1}$ предварительно преобразовав уравнение (\ref{eq:scheme-comp-2}):
+Вычислим ${\bm u}_h^{n+1} \in H_h$ предварительно преобразовав уравнение (\ref{eq:scheme-comp-2}):
 $$
 \int_{\Omega} {\bm u}_h^{n+1} \cdot {\bm v}\,dx = \int_{\Omega} {\bm u}_h^{n+\frac{1}{2}} \cdot {\bm v} \, dx - \tau \int_{\Omega} \nabla p_h^{n+1} \cdot {\bm v} \,dx.
 $$
@@ -294,7 +336,7 @@ $$
 \begin{figure}
 	\begin{center}
 		\includegraphics[width=200px]{pics/mesh}
-		\caption{Сетка размером $N=40$.}
+		\caption{Сетка размером $N=40$. Число узлов $1600$.}
 		\label{fg:scheme-mesh}
 	\end{center}
 \end{figure}
@@ -305,7 +347,7 @@ $$
 \subsection{Норма погрешности}
 Вычисление нормы $L_2(\Omega)$ погрешности $\varepsilon^n$ для временного слоя $n$:
 $$
-\varepsilon^n = (\int_{\Omega} ({\bm u}_h^n - {\bm u}_{ex}^n )^2 \, dx)^{\frac{1}{2}}.
+\varepsilon^n = \left(\int_{\Omega} ({\bm u}_h^n - {\bm u}_{ex}^n )^2 \, dx\right)^{\frac{1}{2}}.
 $$
 
 \subsection{Сравнение}
@@ -314,13 +356,13 @@ $$
 \item cn - схема Кранка-Николсона,
 \item dr - схема Дугласа-Рекфорда,
 \item im - чисто неявная схема,
-\item ct - покомпонентная схема,
-\item pr - схема Письмана-Рекфорда.
+\item ct - схема расщепления по компонентам,
+\item pr - схема Писмена-Рекфорда.
 \end{itemize}
 
 
 
-Схемы расщепления проигрывают по точности чисто неявной и Кранка-Николсона, при этом  схема Письмена-Рекфорда неустойчива на сетке $N=20$ независимо от $\tau$. При увеличении размера сетки схема Дугласа-Рекфорда заметно приближается к неявной и Кранка-Николсона.
+Схемы расщепления проигрывают по точности чисто неявной и Кранка-Николсона, при этом  схема Писмена-Рекфорда неустойчива на сетке $N=20$ независимо от $\tau$. При увеличении размера сетки схема Дугласа-Рекфорда заметно приближается к неявной и Кранка-Николсона.
 
 График на рис. (\ref{fg:scheme-time}) показывает, что время вычисления по схемам расщепления быстрее чем по неявной и Кранка-Николсона. Таким образом схема Дугласа-Рекфорда наиболее предпочтительная для решения задач данного типа.
 
@@ -366,7 +408,10 @@ $$
 
 \begin{thebibliography}{9}
 \bibitem{vabishchevich-1999} Самарский А.А., Вабищевич П.Н. Аддитивные схемы для задач математической физики. \newblock --- М.: Наука, 1999. 319~с.
-\bibitem{fenicsbook-2012} Anders Logg, Kent-Andre Mardal, Garth Wells. Automated Solution of Differential Equations by the Finite Element Method. \newblock --- Berlin: Springer Berlin Heidelberg, 2012. 723~p.
+\bibitem{fenicsbook-2012} Anders Logg, Kent-Andre Mardal, Garth Wells. Automated Solution of Differential Equations by the Finite Element Method. \newblock --- Berlin: Springer Berlin Heidelberg, 2012. 723~pp.
+\bibitem{guzman-2011} J. Guzman, M. Neilan. Conforming and divergence free stokes elements on general triangular meshes. \newblock --- Providence, RI, USA: Scientific Computing Group, Brown University, 2011. 17~pp.
+
+
 \end{thebibliography}
 
 \end{document}
