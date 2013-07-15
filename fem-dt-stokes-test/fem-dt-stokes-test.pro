@@ -11,7 +11,8 @@ SOURCES += main.cpp \
     settings.cpp \
     prscheme.cpp \
     lbscheme.cpp \
-    imscheme.cpp
+    imscheme.cpp \
+    vrscheme.cpp
 
 HEADERS += \
     basesolver.h \
@@ -22,7 +23,8 @@ HEADERS += \
     domains.h \
     prscheme.h \
     lbscheme.h \
-    imscheme.h
+    imscheme.h \
+    vrscheme.h
 
 OTHER_FILES += \
     ufl/DR4.ufl \
@@ -40,7 +42,10 @@ OTHER_FILES += \
     ufl/CN1.ufl \
     start.sh \
     ufl/IM.ufl \
-    ufl/L2V.ufl
+    ufl/L2V.ufl \
+    ufl/VR1.ufl \
+    ufl/VR2.ufl \
+    ufl/VR3.ufl
 
 LIBS += -ldolfin
 

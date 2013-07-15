@@ -1,0 +1,16 @@
+shape = triangle
+U = VectorElement("Lagrange", shape, 2)
+P = FiniteElement("Lagrange", shape, 1)
+
+u = TrialFunction(U)
+p = TrialFunction(P)
+v = TestFunction(U)
+q = TestFunction(P)
+
+u1 = Coefficient(U)
+u20 = Coefficient(U)
+p2 = Coefficient(P)
+tau = Constant(shape)
+
+a = 1.0/tau*inner(u, v)*dx
+L = 1.0/tau*inner(u20, v)*dx - inner(grad(u1), grad(v))*dx - inner(grad(p2), v)*dx

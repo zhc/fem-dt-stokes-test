@@ -330,6 +330,45 @@ $$
 $$
 \end{enumerate}
 
+\subsection{Векторная схема}
+Уравнение (\ref{eq:scheme-main}) запишем в следующем виде:
+$$\frac{\partial {\bm u}_1}{\partial t} + A_1{\bm u}_1 + A_2{\bm u}_1 = {\bm 0},$$
+$$\frac{\partial {\bm u}_2}{\partial t} + A_1{\bm u}_2 + A_2{\bm u}_2 = {\bm 0}.$$
+Если вычесть второе уравнение из первого:
+$$
+\frac{\partial ({\bm u}_1 - {\bm u}_2)}{\partial t} = {\bm 0}.
+$$
+Что означает $${\bm u}_1 ({\bm x}, 0) = {\bm u}_2 ({\bm x}, 0).$$
+Запишем дискретную схему:
+$$\frac{{\bm y}_{1}^{n+1} - {\bm y}_{1}^{n} }{\tau} + A_1 {\bm y}_1^{n+1} + A_2 {\bm y}_2^n = {\bm 0},$$
+$$\frac{{\bm y}_{2}^{n+1} - {\bm y}_{2}^{n} }{\tau} + A_1 {\bm y}_1^{n+1} + A_2 {\bm y}_2^{n+1} = {\bm 0}.$$
+Запишем в векторном виде:
+$$
+{\bm B}\frac{{\bm Y}^{n+1} - {\bm Y}^{n}}{\tau} + {\bm A} {\bm Y}^n = {\bm 0},
+$$
+$$
+{\bm B} = \left( \begin{array}{cc}
+{\bm E} + \tau A_1 & {\bm 0} \\
+\tau A_1 & {\bm E} + \tau A_2 \\
+\end{array} \right),
+$$
+$$
+{\bm Y}^n = \left(\begin{array}{c}
+{\bm y}_1^{n} \\
+{\bm y}_2^{n} \\
+\end{array}\right),
+$$
+$$
+{\bm A} = \left(
+\begin{array}{cc}
+A_1 & A_2 \\
+A_1 & A_2
+\end{array}
+\right).
+$$
+
+
+
 \section{Численное сравнение}
 Проведено численное сравнение каждой схемы, на $4$ сетках  с разными размерами $N = 20, 40, 80, 160$, где $N$ это количество узлов на ребре единичного квадрата (рис. \ref{fg:scheme-mesh}). Шаг по времени $\tau = 0.01, 0.005, 0.0025$. Расчетное время $T=0.2$.
 

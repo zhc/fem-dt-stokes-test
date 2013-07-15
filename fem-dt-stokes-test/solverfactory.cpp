@@ -4,6 +4,7 @@
 #include "prscheme.h"
 #include "lbscheme.h"
 #include "imscheme.h"
+#include "vrscheme.h"
 #include <map>
 
 SolverFactory::SolverFactory(Settings &settings) : _settings(settings)
@@ -36,6 +37,8 @@ BaseSolver *SolverFactory::create()
     solver = new LBScheme(_settings);
     solvers[solver->name()] = solver;
     solver = new IMScheme(_settings);
+    solvers[solver->name()] = solver;
+    solver = new VRScheme(_settings);
     solvers[solver->name()] = solver;
 
     solver = 0;
