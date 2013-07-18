@@ -79,10 +79,10 @@ $$
 В качестве тестовой модельной задачи, возьмем задачу о течении в каверне с подвижной верхней границей. 
 Для задания подвижной границы, необходимо задать на ней ненулевые значения скорости.
 Задача решается на единичном квадрате $\Omega$ (рис. \ref{fg:cavity}), c границей $\partial \Omega=\Gamma_1 \cup \Gamma_2$. На верхней границе $\Gamma_1$ поставлено условие гладкой стенки $({\bm u}, {\bm n}) = 0$, где ${\bm n}$ нормаль границы и движение идет по направлению границы (направо ${\bm g}({\bm x},t)=\{1,0\}$). 
-В остальной части границы $\Gamma_2=\partial \Omega / \Gamma_1$ поставлено условие прилипания ${\bm g}({\bm x}, t)={\bm 0}$. Внутренние источники скорости отсутствуют ${\bm f}({\bm x}, t)={\bm 0}$. Таким образом, решаемая задача имеет следующую постановку:
+В остальной части границы $\Gamma_2=\partial \Omega / \Gamma_1$ поставлено условие прилипания ${\bm g}({\bm x}, t)=0$. Внутренние источники скорости отсутствуют ${\bm f}({\bm x}, t)=0$. Таким образом, решаемая задача имеет следующую постановку:
 \begin{equation}
 \begin{aligned}
-\frac{\partial {\bm u}}{\partial t} -\Delta {\bm u} + \nabla p &= {\bm 0}, \\
+\frac{\partial {\bm u}}{\partial t} -\Delta {\bm u} + \nabla p &= 0, \\
 \nabla\cdot{\bm u} &= 0, 
 \end{aligned}
 \quad {\bm x} \in \Omega, \quad 0<t \leq T,
@@ -92,14 +92,14 @@ $$
 \begin{equation}
 \begin{split}
 {\bm u({\bm x}, t)} &= \{1, 0\}, \quad {\bm x} \in \Gamma_1, \\
-{\bm u({\bm x}, t)} &= {\bm 0}, \quad {\bm x} \in \Gamma_2, \\
+{\bm u({\bm x}, t)} &= 0, \quad {\bm x} \in \Gamma_2, \\
 \end{split}
 \quad 0<t \leq T,
 \label{eq:scheme-boundary}
 \end{equation} 
 и начальным условием:
 \begin{equation}
-{\bm u({\bm x}, 0)} = {\bm 0}, \quad {\bm x} \in \Omega.
+{\bm u({\bm x}, 0)} = 0, \quad {\bm x} \in \Omega.
 \label{eq:scheme-start}
 \end{equation}
 
@@ -108,9 +108,9 @@ $$
 \begin{tikzpicture}
 	\tikzstyle{every node} =[font=\large];
 	\path [fill=gray!20!white] (0,0) -- (0, 5) -- (5, 5) -- (5, 0) -- (0, 0);    
-	\draw [<->, line width=2](6,0) -- (0, 0) -- (0, 6);    
-    	\draw [blue, line width=2] (0,0) -- (0, 5) -- (5, 5) -- (5, 0) -- (0, 0);    
-    \draw [red, line width=2] (0, 5) -- (5, 5);
+	\draw [<->, line width=1](6,0) -- (0, 0) -- (0, 6);    
+    	\draw [blue, line width=1] (0,0) -- (0, 5) -- (5, 5) -- (5, 0) -- (0, 0);    
+    \draw [red, line width=1] (0, 5) -- (5, 5);
     \node at (-0.5, -0.5) {$0$};
     \node at (-0.5, 6) {$x_2$};
     \node at (6, -0.5) {$x_1$};
@@ -118,9 +118,9 @@ $$
     \node at (5, -0.5) {$1$};
     
     \node at (2.5, 4.5) {${\bm u} = \{1, 0\}$};
-    %\node at (4.5, 2.5) {${\bm u} = {\bm 0}$};
-    %\node at (0.5, 2.5) {${\bm u} = {\bm 0}$};
-    \node at (2.5, 0.5) {${\bm u} = {\bm 0}$};
+    %\node at (4.5, 2.5) {${\bm u} = 0$};
+    %\node at (0.5, 2.5) {${\bm u} = 0$};
+    \node at (2.5, 0.5) {${\bm u} = 0$};
     
     \node at (2.5, 5.5) {$\Gamma_1$};    
     \node at (2.5, -0.5) {$\Gamma_2$};
@@ -140,7 +140,7 @@ $$
 V=\{ ({\bm u}, p) : \, {\bm u} \in H(\mathrm{div}, \Omega), \, p \in L^2(\Omega),  {\bm u}|_{\partial \Omega}= {\bm g} \},
 $$
 $$
-\hat V=\{ ({\bm v}, q) : \, {\bm v} \in H(\mathrm{div}, \Omega), \, q \in L^2(\Omega), \, {\bm v}|_{\partial \Omega}={\bm 0} \},
+\hat V=\{ ({\bm v}, q) : \, {\bm v} \in H(\mathrm{div}, \Omega), \, q \in L^2(\Omega), \, {\bm v}|_{\partial \Omega}=0 \},
 $$
 где $L^2(\Omega)$ --- гильбертово пространство, $H(\mathrm{div}, \Omega) = \{{\bm u} \in [L^2(\Omega)]^2 : \nabla\cdot {\bm u} \in L^2(\Omega)\}$ --- функциональное пространство Соболева.
 Умножим уравнения (\ref{eq:scheme-main}) с неизвестными функциями $({\bm u}, p) \in V$  на тестовые функции $({\bm v}, q)$ соответственно, и возьмем интеграл по области $\Omega$:
@@ -207,7 +207,7 @@ $$
 H=\{ {\bm u} \in H(\mathrm{div}, \Omega), \, {\bm u}|_{\partial \Omega}= {\bm g} \},
 $$
 $$
-\hat{H}=\{ {\bm v} \in H(\mathrm{div}, \Omega), \, {\bm v}|_{\partial \Omega}={\bm 0} \},
+\hat{H}=\{ {\bm v} \in H(\mathrm{div}, \Omega), \, {\bm v}|_{\partial \Omega}=0 \},
 $$
 $$
 \Pi=\{ p \in L^2(\Omega) \},
@@ -217,11 +217,14 @@ $$
 \subsection{Расщепляемые операторы}
 Уравнение (\ref{eq:scheme-main}) запишем в операторном виде:
 $$
-\frac{\partial {\bm u}}{\partial t} + A {\bm u} = {\bm 0},
+\frac{\partial {\bm u}}{\partial t} + A {\bm u} = 0,
 $$
 где оператор $A=A_1 + A_2$ аддитивный оператор:
-$$A_1 {\bm u} = - \Delta {\bm u}, \quad {\bm u} = {\bm 0}, \quad {\bm x} \in {\partial \Omega}$$
-$$A_2 {\bm u} = \nabla p, \quad \nabla \cdot {\bm u} = 0.$$
+$$A_1 {\bm u} = - \Delta {\bm u}, \quad {\bm u} = 0, \quad {\bm x} \in {\partial \Omega}$$
+\begin{equation}
+\label{eq:operator-A2}
+A_2 {\bm u} = \nabla p, \quad \nabla \cdot {\bm u} = 0.
+\end{equation}
 Оператор $A_1$ определен на функциях ${\bm u}$ принимающих на границе $\partial \Omega$ значение ноль вектор, $A_2$ определен при условии $\nabla \cdot {\bm u} = 0.$
 
 Рассмотрим $(A_1 {\bm u}, {\bm u})$:
@@ -238,19 +241,16 @@ $$
 $$
 \int_{\Omega} \nabla \cdot (p{\bm u}) \, dx = \int_{\partial \Omega} (p{\bm u}) \cdot {\bm n} \, dx,
 $$ 
-где ${\bm u}$ принимает значение ноль на границе $\partial \Omega$. Второе слагаемое ноль т.к. $\nabla \cdot {\bm u} = 0$. Таким образом $(A_2 {\bm u}, {\bm u}) \geq 0$.
+где ${\bm u}$ принимает значение ноль на границе $\partial \Omega$. Второе слагаемое ноль т.к. $\nabla \cdot {\bm u} = 0$. Таким образом $(A_2 {\bm u}, {\bm u}) = 0$ и оператор $A_2$ является кососимметричным.
 Для использования схем расщепления достаточно показать неотрицательность операторов $A_1$ и $A_2$ \cite{vabishchevich-1999}.
 
 \subsection{Схема Дугласа-Рекфорда}
 Схема записывается в виде:
 \begin{equation} \label{eq:scheme-douglas-1}
-\frac{{\bm u}_h^{n + \frac{1}{2}} - {\bm u}_h^n}{\tau} + A_1 {\bm u}_h^{n + \frac{1}{2}}+A_2 {\bm u}_h^n={\bm 0},
+\frac{{\bm u}_h^{n + \frac{1}{2}} - {\bm u}_h^n}{\tau} + A_1 {\bm u}_h^{n + \frac{1}{2}}+A_2 {\bm u}_h^n=0,
 \end{equation}
 \begin{equation} \label{eq:scheme-douglas-2}
-\frac{{\bm u}_h^{n+1}-{\bm u}_h^{n + \frac{1}{2}}}{\tau} + A_2 ({\bm u}_h^{n+1} - {\bm u}_h^{n} )={\bm 0},
-\end{equation}
-\begin{equation} \label{eq:scheme-douglas-3}
-\nabla \cdot {\bm u}_h^n = 0.
+\frac{{\bm u}_h^{n+1}-{\bm u}_h^{n + \frac{1}{2}}}{\tau} + A_2 ({\bm u}_h^{n+1} - {\bm u}_h^{n} )=0,
 \end{equation}
 
 Вычисление ${\bm u}_h^{n+1} \in H_h$ и $p_h^{n+1} \in \Pi_h$ происходит в несколько этапов:
@@ -261,7 +261,7 @@ $$
 \frac{1}{\tau}\int_{\Omega} {\bm u}_h^{n + \frac{1}{2}}\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}_h^{n + \frac{1}{2}} \cdot \nabla {\bm v} \,dx = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n}\, dx + \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx.
 $$
 
-\item Вычислим $p_h^{n+1}$. Для этого возьмем в дивергенцию уравнение ({\ref{eq:scheme-douglas-2}}) и применим  ({\ref{eq:scheme-douglas-3}}), умножив на $q \in \Pi_h$:
+\item Вычислим $p_h^{n+1}$. Для этого возьмем в дивергенцию уравнение ({\ref{eq:scheme-douglas-2}}) и применим ({\ref{eq:operator-A2}}), умножив на $q \in \Pi_h$:
 $$
 -\int_{\Omega} \nabla p_h^{n+1} \nabla q \,dx = \frac{1}{\tau} \int_{\Omega} \nabla \cdot {\bm u}^* q \,dx + \int_{\Omega} \nabla p_h^{n} \nabla q \,dx.
 $$
@@ -280,9 +280,6 @@ $$
 \begin{equation} \label{eq:scheme-pisman-2}
 \frac{{\bm u}^{n+1}-{\bm u}_h^{n+\frac{1}{2}}}{\tau/2} + A_1 {\bm u}_h^{n+\frac{1}{2}}+ A_2 {\bm u}_h^{n+1}=0,
 \end{equation}
-\begin{equation} \label{eq:scheme-pisman-3}
-\nabla \cdot {\bm u}_h^n = 0.
-\end{equation}
 \begin{enumerate}
 \item 
 Вычислим ${\bm u}_h^{n+\frac{1}{2}}$, для этого умножим уравнение (\ref{eq:scheme-pisman-1}) на функцию ${\bm v} \in \hat H_h$ и возьмем интеграл по $\Omega$:
@@ -290,7 +287,7 @@ $$
 \frac{2}{\tau}\int_{\Omega} {\bm u}_h^{n+\frac{1}{2}}\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}_h^{n+\frac{1}{2}} \cdot \nabla {\bm v} \,dx = -\int_{\Omega} {\bm v} \cdot \nabla p_h^{n}\, dx + \frac{2}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx.
 $$
 \item 
-Вычислим $p_h^{n+1} \in \Pi_h$, для этого вычтем из (\ref{eq:scheme-pisman-2}) уравнение (\ref{eq:scheme-pisman-1}). Применив дивергенцию (\ref{eq:scheme-pisman-3}), умножим на $q \in \Pi_h$:
+Вычислим $p_h^{n+1} \in \Pi_h$, для этого вычтем из (\ref{eq:scheme-pisman-2}) уравнение (\ref{eq:scheme-pisman-1}). Применив дивергенцию (\ref{eq:operator-A2}), умножим на $q \in \Pi_h$:
 $$
 -\int_{\Omega} \nabla p_h^{n+1} \nabla q \,dx = \frac{4}{\tau} \int_{\Omega} \nabla \cdot {\bm u}_h^{n+1} q \,dx + \int_{\Omega} \nabla p_h^{n} \nabla q \,dx.
 $$
@@ -304,13 +301,10 @@ $$
 \subsection{Схема расщепления по компонентам} 
 Расщепление происходит по физическим компонентам. Так в первом уравнении полностью игнорируется слагаемое для давления. Во втором уравнение оставили оператор с давлением. Схема записывается в виде:
 \begin{equation} \label{eq:scheme-comp-1}
-\frac{{\bm u}_h^{n+\frac{1}{2}}-{\bm u}_h^n}{\tau} + A_1 {\bm u}^{n+\frac{1}{2}}=0,
+\frac{{\bm u}_h^{n+\frac{1}{2}}-{\bm u}_h^n}{\tau} + A_1 {\bm u}_h^{n+\frac{1}{2}}=0,
 \end{equation} 
 \begin{equation} \label{eq:scheme-comp-2}
 \frac{{\bm u}_h^{n+1}-{\bm u}_h^{n+\frac{1}{2}}}{\tau} + A_2 {\bm u}_h^{n+1}=0,
-\end{equation}
-\begin{equation} \label{eq:scheme-comp-3}
-\nabla \cdot {\bm u}_h^n = 0.
 \end{equation}
 \begin{enumerate}
 \item 
@@ -319,7 +313,7 @@ $$
 \frac{1}{\tau}\int_{\Omega} {\bm u}_h^{n+\frac{1}{2}}\cdot {\bm v} \,dx + \int_{\Omega} \nabla {\bm u}_h^{n+\frac{1}{2}} \cdot \nabla {\bm v} \,dx = \frac{1}{\tau} \int_{\Omega} {\bm u}_h^{n} \cdot {\bm v} \,dx.
 $$
 \item 
-Применим дивергенцию к уравнению (\ref{eq:scheme-comp-2}), по уравнению (\ref{eq:scheme-comp-3}) слагаемое ${\bm u}_h^{n+1}$ обнуляется. Умножив на $q \in \Pi_h$ и взяв интеграл, вычислим $p_h^{n+1} \in \Pi_h$:
+Применим дивергенцию к уравнению (\ref{eq:scheme-comp-2}), по уравнению (\ref{eq:operator-A2}) слагаемое ${\bm u}_h^{n+1}$ обнуляется. Умножив на $q \in \Pi_h$ и взяв интеграл, вычислим $p_h^{n+1} \in \Pi_h$:
 $$
 \int_{\Omega} \nabla p_h^{n+1} \nabla q \,dx = \frac{1}{\tau} \int_{\Omega} \nabla \cdot {\bm u}_h^{n+\frac{1}{2}} q \,dx.
 $$
@@ -332,33 +326,29 @@ $$
 
 \subsection{Векторная схема}
 Уравнение (\ref{eq:scheme-main}) запишем в следующем виде:
-$$\frac{\partial {\bm u}_1}{\partial t} + A_1{\bm u}_1 + A_2{\bm u}_1 = {\bm 0},$$
-$$\frac{\partial {\bm u}_2}{\partial t} + A_1{\bm u}_2 + A_2{\bm u}_2 = {\bm 0}.$$
+$$\frac{\partial {\bm u}_1}{\partial t} + A_1{\bm u}_1 + A_2{\bm u}_2 = 0,$$
+$$\frac{\partial {\bm u}_2}{\partial t} + A_1{\bm u}_1 + A_2{\bm u}_2 = 0.$$
 Если вычесть второе уравнение из первого:
 $$
-\frac{\partial ({\bm u}_1 - {\bm u}_2)}{\partial t} = {\bm 0}.
+\frac{\partial ({\bm u}_1 - {\bm u}_2)}{\partial t} = 0.
 $$
-Что означает $${\bm u}_1 ({\bm x}, 0) = {\bm u}_2 ({\bm x}, 0).$$
-Запишем дискретную схему:
-$$\frac{{\bm y}_{1}^{n+1} - {\bm y}_{1}^{n} }{\tau} + A_1 {\bm y}_1^{n+1} + A_2 {\bm y}_2^n = {\bm 0},$$
-$$\frac{{\bm y}_{2}^{n+1} - {\bm y}_{2}^{n} }{\tau} + A_1 {\bm y}_1^{n+1} + A_2 {\bm y}_2^{n+1} = {\bm 0}.$$
-Запишем в векторном виде:
+Что означает:
+$${\bm u}_1 ({\bm x}, 0) = {\bm u}_2 ({\bm x}, 0).$$
+Решение будем искать в виде ${\bm Y}=\{{\bm y}_1^n, {\bm y}_2^n\}$, где ${\bm y}_1^n, {\bm y}_2^n \in H_h$. В качестве переменной скорости возможно взять любую компоненту вектора ${\bm Y}$.
+Запишем следующую дискретную схему:
 $$
-{\bm B}\frac{{\bm Y}^{n+1} - {\bm Y}^{n}}{\tau} + {\bm A} {\bm Y}^n = {\bm 0},
+{\bm B}\frac{{\bm Y}^{n+1} - {\bm Y}^{n}}{\tau} + {\bm A} {\bm Y}^n = 0,
 $$
+где
 $$
 {\bm B} = \left( \begin{array}{cc}
-{\bm E} + \tau A_1 & {\bm 0} \\
+{\bm E} + \tau A_1 & 0 \\
 \tau A_1 & {\bm E} + \tau A_2 \\
-\end{array} \right),
-$$
-$$
+\end{array} \right), \,
 {\bm Y}^n = \left(\begin{array}{c}
 {\bm y}_1^{n} \\
 {\bm y}_2^{n} \\
-\end{array}\right),
-$$
-$$
+\end{array}\right), \,
 {\bm A} = \left(
 \begin{array}{cc}
 A_1 & A_2 \\
@@ -366,11 +356,33 @@ A_1 & A_2
 \end{array}
 \right).
 $$
-
+Схема после раскрытия:
+\begin{equation}
+\label{eq:scheme-vr-1}
+\frac{{\bm y}_{1}^{n+1} - {\bm y}_{1}^{n} }{\tau} + A_1 {\bm y}_1^{n+1} + A_2 {\bm y}_2^n = 0,
+\end{equation}
+\begin{equation}
+\label{eq:scheme-vr-2}
+\frac{{\bm y}_{2}^{n+1} - {\bm y}_{2}^{n} }{\tau} + A_1 {\bm y}_1^{n+1} + A_2 {\bm y}_2^{n+1} = 0.
+\end{equation}
+\begin{enumerate}
+\item Вычислим ${\bm y}_1^{n+1}$ из уравнения (\ref{eq:scheme-vr-1}). Для этого умножим уравнение (\ref{eq:scheme-vr-1}) на функцию ${\bm v} \in \hat H_h$ и возьмем интеграл по $\Omega$:
+$$
+\frac{1}{\tau}\int_{\Omega} {\bm y}_1^{n+1} \cdot {\bm v} \, dx + \int_{\Omega} \nabla {\bm y}_1^{n+1} \cdot \nabla {\bm v} \, dx  = \frac{1}{\tau} \int_{\Omega} {\bm y}_1^{n} \cdot {\bm v} \, dx - \int_{\Omega} \nabla p_h^n \cdot {\bm v} \, dx.
+$$
+\item Вычислим $p_2^{n+1}$, вычтем из (\ref{eq:scheme-vr-1}) уравнение (\ref{eq:scheme-vr-2}) и возьмем дивергенцию. Из условия применения оператора $A_2$ к ${\bm y}_2$, слагаемые ${\bm y}_2^n, {\bm y}_2^{n+1}$ равны нулю. Домножим на $q \in \Pi_h$ и возьмем интеграл:
+$$
+\int_{\Omega} \nabla p_h^{n+1} \cdot q \, dx = \int_{\Omega} \nabla p_h^n \cdot \nabla q \, dx - \frac{1}{\tau}\int_{\Omega}\nabla\cdot{\bm y}_1^{n+1}\, dx - \frac{1}{\tau}\int_{\Omega}\nabla\cdot{\bm y}_1^n \, dx.
+$$
+\item Вычислим ${\bm y}_2^{n+1}$ из уравнения (\ref{eq:scheme-vr-2}). Умножим его на функцию ${\bm v} \in \hat H_h$ и возьмем интеграл по $\Omega$:
+$$
+\frac{1}{\tau}\int_{\Omega}{\bm y}_2^{n+1} \cdot {\bm v} \, dx = \frac{1}{\tau} \int_{\Omega} {\bm y}_2^n \, dx - \int_{\Omega}\nabla {\bm y}_1^{n+1} \cdot \nabla {\bm v} \, dx - \int_{\Omega} \nabla p_h^{n+1} \cdot {\bm v} \, dx.
+$$
+\end{enumerate}
 
 
 \section{Численное сравнение}
-Проведено численное сравнение каждой схемы, на $4$ сетках  с разными размерами $N = 20, 40, 80, 160$, где $N$ это количество узлов на ребре единичного квадрата (рис. \ref{fg:scheme-mesh}). Шаг по времени $\tau = 0.01, 0.005, 0.0025$. Расчетное время $T=0.2$.
+Проведено численное сравнение каждой схемы, на $4$ сетках  с разными размерами $N = 20, 40, 80, 160$, где $N$ это количество узлов на ребре единичного квадрата (рис. \ref{fg:scheme-mesh}). Шаг по времени $\tau = 0.01, 0.005, 0.0025$. Расчетное время $T=0.2$, время выбрано экспериментальным путем, как достаточное для выхода в стационар.
 
 \begin{figure}
 	\begin{center}
@@ -396,50 +408,127 @@ $$
 \item dr - схема Дугласа-Рекфорда,
 \item im - чисто неявная схема,
 \item ct - схема расщепления по компонентам,
-\item pr - схема Писмена-Рекфорда.
+\item pr - схема Писмена-Рекфорда,
+\item vr - векторная схема.
 \end{itemize}
 
+Схемы расщепления проигрывают по точности чисто неявной и Кранка-Николсона, при этом  схема Писмена-Рекфорда неустойчива на сетке $N=20$ независимо от $\tau$. 
 
+При увеличении размера сетки схема Дугласа-Рекфорда заметно приближается к неявной и Кранка-Николсона.
 
-Схемы расщепления проигрывают по точности чисто неявной и Кранка-Николсона, при этом  схема Писмена-Рекфорда неустойчива на сетке $N=20$ независимо от $\tau$. При увеличении размера сетки схема Дугласа-Рекфорда заметно приближается к неявной и Кранка-Николсона.
+Векторная схема и схема расщепления по компонентам показали одинаковую норму погрешности во всех тестах, при этом решение векторной схемой занимает больше времени чем схемой расщепления по компонентам.
 
-График на рис. (\ref{fg:scheme-time}) показывает, что время вычисления по схемам расщепления быстрее чем по неявной и Кранка-Николсона. Таким образом схема Дугласа-Рекфорда наиболее предпочтительная для решения задач данного типа.
+График на рис. (\ref{fg:scheme-time}) показывает, что время вычисления по схемам расщепления быстрее чем по неявной и Кранка-Николсона. 
+
+Таким образом использование схемы расщепления Дугласа-Рекфорда наиболее предпочтительно для решения задачи данного типа.
 
 \begin{figure}
-	\begin{center}
-		\includegraphics[width=400px]{data160/error_1}
-		\caption{Норма погрешности скорости в $L_2$ для $N=20$, a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
-		\label{fg:scheme-L2-1}
-	\end{center}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-20-0.01}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=20$, $\tau=0.01$.}	
+\label{fg:scheme-L2-1}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-20-0.005}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=20$, $\tau=0.005$.}	
+\label{fg:scheme-L2-2}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-20-0.0025}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=20$, $\tau=0.0025$.}	
+\label{fg:scheme-L2-3}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-40-0.01}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=40$, $\tau=0.01$.}	
+\label{fg:scheme-L2-4}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-40-0.005}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=40$, $\tau=0.005$.}	
+\label{fg:scheme-L2-5}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-40-0.0025}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=40$, $\tau=0.0025$.}	
+\label{fg:scheme-L2-6}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-80-0.01}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=80$, $\tau=0.01$.}	
+\label{fg:scheme-L2-7}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-80-0.005}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=80$, $\tau=0.005$.}	
+\label{fg:scheme-L2-8}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-80-0.0025}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=80$, $\tau=0.0025$.}	
+\label{fg:scheme-L2-9}
+\end{figure}
+
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-160-0.01}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=160$, $\tau=0.01$.}	
+\label{fg:scheme-L2-10}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-160-0.005}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=160$, $\tau=0.005$.}	
+\label{fg:scheme-L2-11}
+\end{figure}
+
+\begin{figure}
+\begin{center}
+\includegraphics[width=220px]{{{data-vr/unorm-160-0.0025}}}
+\end{center}
+\caption{Норма погрешности скорости в $L_2$ для $N=160$, $\tau=0.0025$.}	
+\label{fg:scheme-L2-12}
 \end{figure}
 
 \begin{figure}
 	\begin{center}
-		\includegraphics[width=400px]{data160/error_2}
-		\caption{Норма погрешности скорости в $L_2$ для $N=40$, a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
-		\label{fg:scheme-L2-2}
-	\end{center}
-\end{figure}
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=400px]{data160/error_3}
-		\caption{Норма погрешности скорости в $L_2$ для $N=80$, a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
-		\label{fg:scheme-L2-3}
-	\end{center}
-\end{figure}
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=400px]{data160/error_4}
-		\caption{Норма погрешности скорости в $L_2$ для $N=160$, a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
-		\label{fg:scheme-L2-4}
-	\end{center}
-\end{figure}
-
-\begin{figure}
-	\begin{center}
-		\includegraphics[width=400px]{data160/scheme-time}
+\begin{tikzpicture}
+	\path (0,0) -- (0, 0.1) -- (10, 0.1) -- (10, 0) -- (0, 0);    
+    \node at (1, 0) {a};
+    \node at (5.5, 0) {b};
+    \node at (10, 0) {c};
+\end{tikzpicture}
+		\includegraphics[width=400px]{data-vr/scheme-time}
 		\caption{Время вычисления для a) $\tau=0.01$, b) $\tau=0.005$, c) $\tau=0.0025$.}
 		\label{fg:scheme-time}
 	\end{center}
